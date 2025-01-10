@@ -23,4 +23,13 @@
         <servlet-name>Shuttles</servlet-name>
         <url-pattern>/delete/*</url-pattern>
     </servlet-mapping>
+            <!--    USERS-->
+    <servlet>
+        <servlet-name>UserServlet</servlet-name>
+        <servlet-class>web.app.viago.UserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UserServlet</servlet-name>
+        <url-pattern>/users</url-pattern>
+    </servlet-mapping>
 </web-app>

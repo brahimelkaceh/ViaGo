@@ -13,15 +13,30 @@ public class UserDAO {
     private Connection connection;
 
     public UserDAO() {
-        this.connection = DbConnection.getConnection();
+        // Ensure connection is initialized properly
+        try {
+            this.connection = DbConnection.getInstance().getConnection();
+            if (this.connection == null) {
+                throw new SQLException("Failed to establish database connection.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Error initializing database connection: " + e.getMessage());
+
+        }
     }
 
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM users";
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            ResultSet resultSet = statement.executeQuery();
+        // Validate connection before proceeding
+        if (connection == null) {
+            System.err.println("Database connection is not established. Aborting query.");
+            return users;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
             while (resultSet.next()) {
                 User user = new User();
                 user.setId(resultSet.getInt("id"));
@@ -30,7 +45,7 @@ public class UserDAO {
                 users.add(user);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error executing query: " + e.getMessage());
         }
 
         return users;

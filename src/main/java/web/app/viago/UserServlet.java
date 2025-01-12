@@ -27,7 +27,7 @@ public class UserServlet extends HttpServlet {
 
         out.println("<h1>Users</h1>");
         for (User user : users) {
-            out.println("<p>" + user.getName() + " (" + user.getEmail() + ")</p>");
+            out.println("<p> username : " + user.getName() + " (" + user.getEmail() + ")</p>");
         }
     }
 }

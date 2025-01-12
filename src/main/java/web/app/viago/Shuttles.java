@@ -10,6 +10,9 @@ import java.io.IOException;
 public class Shuttles extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Get Method Called");
+        System.out.println("Get Method Called" + req.getServletPath());
+
+            req.getRequestDispatcher("/vues/manage-shuttles.jsp").forward(req, resp);
+        System.out.println("Get Method Executed");
     }
 }

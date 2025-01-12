@@ -62,8 +62,9 @@
                     </div>
                 </div>
             </div>
-
-
+        </div>
+        <div class="container mt-2 bg-white py-2">
+            <a class="btn btn-primary" href="/create" role="button">Manage Shuttle Services</a>
         </div>
     </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

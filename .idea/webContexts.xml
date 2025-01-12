@@ -5,6 +5,7 @@
       <map>
         <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/vues/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp/vues" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/vues/manage-shuttles.jsp" value="file://$PROJECT_DIR$/src/main/webapp/vues" />
       </map>
     </option>
   </component>

@@ -3,33 +3,4 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
-    <servlet>
-        <servlet-name>Shuttles</servlet-name>
-        <servlet-class>web.app.viago.Shuttles</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Shuttles</servlet-name>
-        <url-pattern>/create</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Shuttles</servlet-name>
-        <url-pattern>/shuttles/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Shuttles</servlet-name>
-        <url-pattern>/update/*</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>Shuttles</servlet-name>
-        <url-pattern>/delete/*</url-pattern>
-    </servlet-mapping>
-            <!--    USERS-->
-    <servlet>
-        <servlet-name>UserServlet</servlet-name>
-        <servlet-class>web.app.viago.UserServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>UserServlet</servlet-name>
-        <url-pattern>/users</url-pattern>
-    </servlet-mapping>
 </web-app>

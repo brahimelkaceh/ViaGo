@@ -2,6 +2,7 @@ package web.app.viago.dao.users;
 
 import web.app.viago.dao.DbConnection;
 import web.app.viago.model.User;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,40 +23,68 @@ public class UserDaoImpl implements UserDAO {
 
     @Override
     public void create(User user) {
-        String query = "INSERT INTO users (name, email, password, role, phone_number) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        PreparedStatement statement = null;
+        try {
+            connection = DbConnection.getInstance().getConnection();
+            String query = "INSERT INTO users (name, email, password, role, phone_number) VALUES (?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(query);
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());  // Remember, password is hashed
+            statement.setString(3, user.getPassword());
             statement.setString(4, user.getRole());
             statement.setString(5, user.getPhoneNumber());
             statement.executeUpdate();
         } catch (SQLException e) {
-            System.out.println("Error creating user: " + e.getMessage());
+            System.err.println("Error creating user: " + e.getMessage());
+        } finally {
+            try {
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
     }
 
+
     @Override
     public User findById(int id) {
-        String query = "SELECT * FROM users WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            connection = DbConnection.getInstance().getConnection();
+            String query = "SELECT * FROM users WHERE id = ?";
+            statement = connection.prepareStatement(query);
             statement.setInt(1, id);
-            ResultSet rs = statement.executeQuery();
+
+            rs = statement.executeQuery();
             if (rs.next()) {
+                // If user is found, create and return the User object
                 return new User(
                         rs.getInt("id"),
                         rs.getString("name"),
                         rs.getString("email"),
                         rs.getString("password"),
                         rs.getString("role"),
-                        rs.getString("phone_number"),
-                        rs.getDate("created_at")
+                        rs.getString("phone_number")
                 );
+            } else {
+                // If no user is found, return null
+                return null;
             }
         } catch (SQLException e) {
-            System.out.println("Error finding user: " + e.getMessage());
+            System.err.println("Error finding user: " + e.getMessage());
+            return null; // You can also return an empty User or throw a custom exception
+        } finally {
+            // Clean up resources in the finally block
+            try {
+                if (rs != null) rs.close();
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
-        return null;
     }
 
     @Override
@@ -84,28 +113,62 @@ public class UserDaoImpl implements UserDAO {
 
     @Override
     public void update(User user) {
-        String query = "UPDATE users SET name = ?, email = ?, password = ?, role = ?, phone_number = ? WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        PreparedStatement statement = null;
+
+        try {
+            connection = DbConnection.getInstance().getConnection();
+            String query = "UPDATE users SET name = ?, email = ?, password = ?, role = ?, phone_number = ? WHERE id = ?";
+            statement = connection.prepareStatement(query);
+
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, user.getPassword());
             statement.setString(4, user.getRole());
             statement.setString(5, user.getPhoneNumber());
             statement.setInt(6, user.getId());
-            statement.executeUpdate();
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("User with id " + user.getId() + " updated successfully.");
+            } else {
+                System.out.println("No user found with id " + user.getId() + " to delete.");
+            }
         } catch (SQLException e) {
             System.out.println("Error updating user: " + e.getMessage());
+        } finally {
+            // Clean up resources in the finally block
+            try {
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
     }
 
     @Override
     public void delete(int id) {
-        String query = "DELETE FROM users WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        PreparedStatement statement = null;
+        try {
+            connection = DbConnection.getInstance().getConnection();
+            String query = "DELETE FROM users WHERE id = ?";
+            statement = connection.prepareStatement(query);
             statement.setInt(1, id);
-            statement.executeUpdate();
+            int rowsAffected = statement.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("User with id " + id + " deleted successfully.");
+            } else {
+                System.out.println("No user found with id " + id + " to delete.");
+            }
         } catch (SQLException e) {
-            System.out.println("Error deleting user: " + e.getMessage());
+            System.err.println("Error deleting user: " + e.getMessage());
+        } finally {
+            // Clean up resources in the finally block
+            try {
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
         }
     }
 

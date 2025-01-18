@@ -26,16 +26,11 @@ public class UserServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        action = "list";
-
-        System.out.println("action: " + action);
-
 
         if (action != null) {
             switch (action) {
                 case "list":
                     List<User> users = userService.getAllUsers();
-                    System.out.println("user list: " + users);
                     request.setAttribute("users", users);
                     request.getRequestDispatcher("/users/list.jsp").forward(request, response);
                     break;
@@ -49,6 +44,22 @@ public class UserServlet extends HttpServlet {
                     } else {
                         response.sendRedirect("/users?action=list");
                     }
+                    break;
+
+                case "update":
+                    int updateUserId = Integer.parseInt(request.getParameter("id"));
+                    User updateUser = userService.getUserById(updateUserId);  // Fetch the user to update
+                    if (updateUser != null) {
+                        System.out.println("selected user : " + updateUser);
+                        request.setAttribute("user", updateUser);  // Set user as request attribute
+                        request.getRequestDispatcher("/users/form.jsp").forward(request, response);  // Forward to form.jsp for update
+                    } else {
+                        response.sendRedirect("/users?action=list");  // Redirect to list if user not found
+                    }
+                    break;
+
+                case "create":
+                    request.getRequestDispatcher("/users/form.jsp").forward(request, response);  // Forward to empty form for new user
                     break;
 
                 default:
@@ -78,10 +89,9 @@ public class UserServlet extends HttpServlet {
                         String password = request.getParameter("password"); // Ensure this is hashed before saving
                         String role = request.getParameter("role");
                         String phoneNumber = request.getParameter("phone_number");
-
                         User newUser = new User(name, email, password, role, phoneNumber);
-                        userService.createUser(newUser);
-                        response.sendRedirect("/users?action=list");
+                        userService.createUser(newUser);  // Create the new user
+                        response.sendRedirect("/users?action=list");  // Redirect to user list
                     } catch (Exception e) {
                         request.setAttribute("error", "Error creating user: " + e.getMessage());
                         request.getRequestDispatcher("/users/error.jsp").forward(request, response);
@@ -98,8 +108,8 @@ public class UserServlet extends HttpServlet {
                         String updatedPhoneNumber = request.getParameter("phone_number");
 
                         User updatedUser = new User(userId, updatedName, updatedEmail, updatedPassword, updatedRole, updatedPhoneNumber);
-                        userService.updateUser(updatedUser);
-                        response.sendRedirect("/users?action=view&id=" + userId);
+                        userService.updateUser(updatedUser);  // Update the user details
+                        response.sendRedirect("/users?action=view&id=" + userId);  // Redirect to the updated user view page
                     } catch (Exception e) {
                         request.setAttribute("error", "Error updating user: " + e.getMessage());
                         request.getRequestDispatcher("/users/error.jsp").forward(request, response);
@@ -109,8 +119,8 @@ public class UserServlet extends HttpServlet {
                 case "delete":
                     try {
                         int deleteId = Integer.parseInt(request.getParameter("id"));
-                        userService.deleteUser(deleteId);
-                        response.sendRedirect("/users?action=list");
+                        userService.deleteUser(deleteId);  // Delete the user
+                        response.sendRedirect("/users?action=list");  // Redirect to the user list
                     } catch (Exception e) {
                         request.setAttribute("error", "Error deleting user: " + e.getMessage());
                         request.getRequestDispatcher("/users/error.jsp").forward(request, response);
@@ -118,7 +128,7 @@ public class UserServlet extends HttpServlet {
                     break;
 
                 default:
-                    response.sendRedirect("/users?action=list");
+                    response.sendRedirect("/users?action=list");  // Default action is to redirect to the user list
                     break;
             }
         }

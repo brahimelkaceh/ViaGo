@@ -21,6 +21,92 @@ public class UserDaoImpl implements UserDAO {
         }
     }
 
+    public boolean register(User user) {
+        String checkQuery = "SELECT COUNT(*) FROM users WHERE email = ?";
+        String insertQuery = "INSERT INTO users (name, email, password, role, phone_number) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement checkStatement = null;
+        PreparedStatement insertStatement = null;
+
+        try {
+            connection = DbConnection.getInstance().getConnection();
+
+            // Check if email already exists
+            checkStatement = connection.prepareStatement(checkQuery);
+            checkStatement.setString(1, user.getEmail());
+            ResultSet rs = checkStatement.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.out.println("Email already exists: " + user.getEmail());
+                return false; // Email already exists
+            }
+
+            // Insert new user
+            insertStatement = connection.prepareStatement(insertQuery);
+            insertStatement.setString(1, user.getName());
+            insertStatement.setString(2, user.getEmail());
+            insertStatement.setString(3, user.getPassword()); // Hash the password before storing
+            insertStatement.setString(4, user.getRole());
+            insertStatement.setString(5, user.getPhoneNumber());
+            insertStatement.executeUpdate();
+
+            System.out.println("User registered successfully.");
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Error registering user: " + e.getMessage());
+            return false;
+        } finally {
+            try {
+                if (checkStatement != null) checkStatement.close();
+                if (insertStatement != null) insertStatement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
+        }
+    }
+
+    public User login(String email, String password) {
+        String query = "SELECT * FROM users WHERE email = ? AND password = ?";
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+
+        try {
+            connection = DbConnection.getInstance().getConnection();
+            statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            statement.setString(2, password); // Hash the input password and compare it with the stored hash
+
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                // User found, return User object
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("phone_number")
+                );
+            } else {
+                System.out.println("Invalid email or password.");
+                return null; // Login failed
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error during login: " + e.getMessage());
+            return null;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (statement != null) statement.close();
+                if (connection != null) connection.close();
+            } catch (SQLException e) {
+                System.err.println("Error closing resources: " + e.getMessage());
+            }
+        }
+    }
+
+
     @Override
     public void create(User user) {
         PreparedStatement statement = null;
@@ -198,6 +284,32 @@ public class UserDaoImpl implements UserDAO {
             // Handle SQL exception
         }
         return users;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        PreparedStatement statement = null;
+
+        try {
+            connection = DbConnection.getInstance().getConnection();
+            String query = "SELECT * FROM users WHERE email = ?";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, email);
+            ResultSet rs = statement.executeQuery();
+            if (rs.next()) {
+                return new User(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("phone_number")
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("Error finding user: " + e.getMessage());
+        }
+        return null;
     }
 }
 

@@ -3,6 +3,7 @@ package web.app.viago.services;
 import web.app.viago.dao.users.UserDAO;
 import web.app.viago.dao.users.UserDaoImpl;
 import web.app.viago.model.User;
+
 import java.util.List;
 
 public class UserService {

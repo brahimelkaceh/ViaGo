@@ -1,4 +1,4 @@
-package web.app.viago.controller;
+package web.app.viago.controller.user;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;

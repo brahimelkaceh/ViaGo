@@ -41,7 +41,7 @@ public class LoginServlet extends HttpServlet {
             // Check user role and redirect accordingly
             if ("company".equals(user.getRole())) {
                 // Redirect to the dashboard for company users
-                response.sendRedirect("dashboard/index.jsp");
+                response.sendRedirect("index.jsp");
             } else {
                 // Redirect to subscriptions page for other roles
                 response.sendRedirect("subscriptions.jsp");

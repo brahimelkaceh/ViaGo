@@ -122,4 +122,21 @@ public class Shuttle {
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
+
+    @Override
+    public String toString() {
+        return "Shuttle{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", departureCity='" + departureCity + '\'' +
+                ", arrivalCity='" + arrivalCity + '\'' +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", departureTime='" + departureTime + '\'' +
+                ", arrivalTime='" + arrivalTime + '\'' +
+                ", busDescription='" + busDescription + '\'' +
+                ", maxSubscribers=" + maxSubscribers +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }

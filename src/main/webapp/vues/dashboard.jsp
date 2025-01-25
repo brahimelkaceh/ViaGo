@@ -1,5 +1,7 @@
 <%@ page import="web.app.viago.model.User" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -33,70 +35,13 @@
     %>
 </nav>
 
-
+<c:if test="${not empty error}">
+    <div class="alert alert-danger mt-2">${error}</div>
+</c:if>
 <!-- Main Dashboard -->
 <div class="container mt-4">
-    <!-- Section: Requests -->
-    <section id="requests">
-        <h2>Manage Requests</h2>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Request ID</th>
-                <th>Customer Name</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>1</td>
-                <td>REQ123</td>
-                <td>John Doe</td>
-                <td><span class="badge bg-warning">Pending</span></td>
-                <td>
-                    <button class="btn btn-success btn-sm">Approve</button>
-                    <button class="btn btn-danger btn-sm">Reject</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- Section: Users -->
-    <section id="users" class="mt-5">
-        <h2>Manage Users</h2>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>User ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>1</td>
-                <td>USR001</td>
-                <td>Jane Smith</td>
-                <td>jane@example.com</td>
-                <td><span class="badge bg-success">Active</span></td>
-                <td>
-                    <button class="btn btn-primary btn-sm">Edit</button>
-                    <button class="btn btn-danger btn-sm">Deactivate</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
-
-    <!-- Section: Shuttles -->
     <section id="shuttles" class="mt-5">
-        <h2>Manage Shuttles</h2>
+        <h2>Manage Shuttles  </h2>
 
         <!-- Button to trigger the Add Shuttle Form -->
         <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addShuttleModal">
@@ -106,25 +51,45 @@
         <table class="table table-striped">
             <thead>
             <tr>
-                <th>#</th>
-                <th>Shuttle ID</th>
-                <th>Model</th>
-                <th>Status</th>
+                <th>ID</th>
+                <th>Departure City</th>
+                <th>Arrival City</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Departure Time</th>
+                <th>Arrival Time</th>
+                <th>Bus Description</th>
+                <th>Max Subscribers</th>
                 <th>Actions</th>
+
             </tr>
             </thead>
             <tbody>
             <!-- Example shuttle row, dynamically populate this with backend data -->
-            <tr>
-                <td>1</td>
-                <td>SHT001</td>
-                <td>Ford Transit</td>
-                <td><span class="badge bg-info">In Use</span></td>
-                <td>
-                    <button class="btn btn-primary btn-sm">Edit</button>
-                    <button class="btn btn-danger btn-sm">Remove</button>
-                </td>
-            </tr>
+            <c:forEach var="shuttle" items="${shuttles}">
+                <tr>
+                    <td>${shuttle.id}</td>
+                    <td>${shuttle.departureCity}</td>
+                    <td>${shuttle.arrivalCity}</td>
+                    <td>${shuttle.startDate}</td>
+                    <td>${shuttle.endDate}</td>
+                    <td>${shuttle.departureTime}</td>
+                    <td>${shuttle.arrivalTime}</td>
+                    <td>${shuttle.busDescription}</td>
+                    <td>${shuttle.maxSubscribers}</td>
+                    <td class="d-flex justify-content-between">
+                        <a href="/dashboard?action=update&id=${shuttle.id}" class="btn btn-warning btn-sm">Edit</a>
+                        <form id="deleteForm" action="/dashboard" method="POST" style="display:none;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="id" value="${shuttle.id}">
+                        </form>
+                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#confirmDeleteModal" onclick="setDeleteId(${shuttle.id})">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </c:forEach>
             </tbody>
         </table>
 
@@ -184,34 +149,93 @@
             </div>
         </div>
     </section>
+    <!-- Section: Requests -->
+<%--    <section id="requests">--%>
+<%--        <h2>Manage Requests</h2>--%>
+<%--        <table class="table table-striped">--%>
+<%--            <thead>--%>
+<%--            <tr>--%>
+<%--                <th>#</th>--%>
+<%--                <th>Request ID</th>--%>
+<%--                <th>Customer Name</th>--%>
+<%--                <th>Status</th>--%>
+<%--                <th>Actions</th>--%>
+<%--            </tr>--%>
+<%--            </thead>--%>
+<%--            <tbody>--%>
+<%--            <tr>--%>
+<%--                <td>1</td>--%>
+<%--                <td>REQ123</td>--%>
+<%--                <td>John Doe</td>--%>
+<%--                <td><span class="badge bg-warning">Pending</span></td>--%>
+<%--                <td>--%>
+<%--                    <button class="btn btn-success btn-sm">Approve</button>--%>
+<%--                    <button class="btn btn-danger btn-sm">Reject</button>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
+<%--            </tbody>--%>
+<%--        </table>--%>
+<%--    </section>--%>
+
+    <!-- Section: Users -->
+<%--    <section id="users" class="mt-5">--%>
+<%--        <h2>Manage Users</h2>--%>
+<%--        <table class="table table-striped">--%>
+<%--            <thead>--%>
+<%--            <tr>--%>
+<%--                <th>#</th>--%>
+<%--                <th>User ID</th>--%>
+<%--                <th>Name</th>--%>
+<%--                <th>Email</th>--%>
+<%--                <th>Status</th>--%>
+<%--                <th>Actions</th>--%>
+<%--            </tr>--%>
+<%--            </thead>--%>
+<%--            <tbody>--%>
+<%--            <tr>--%>
+<%--                <td>1</td>--%>
+<%--                <td>USR001</td>--%>
+<%--                <td>Jane Smith</td>--%>
+<%--                <td>jane@example.com</td>--%>
+<%--                <td><span class="badge bg-success">Active</span></td>--%>
+<%--                <td>--%>
+<%--                    <button class="btn btn-primary btn-sm">Edit</button>--%>
+<%--                    <button class="btn btn-danger btn-sm">Deactivate</button>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
+<%--            </tbody>--%>
+<%--        </table>--%>
+<%--    </section>--%>
+
+
 
     <!-- Section: Subscriptions -->
-    <section id="subscriptions" class="mt-5">
-        <h2>Manage Subscriptions</h2>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>#</th>
-                <th>Subscription ID</th>
-                <th>Plan</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>1</td>
-                <td>SUB001</td>
-                <td>Premium</td>
-                <td><span class="badge bg-success">Active</span></td>
-                <td>
-                    <button class="btn btn-warning btn-sm">Renew</button>
-                    <button class="btn btn-danger btn-sm">Cancel</button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </section>
+<%--    <section id="subscriptions" class="mt-5">--%>
+<%--        <h2>Manage Subscriptions</h2>--%>
+<%--        <table class="table table-striped">--%>
+<%--            <thead>--%>
+<%--            <tr>--%>
+<%--                <th>#</th>--%>
+<%--                <th>Subscription ID</th>--%>
+<%--                <th>Plan</th>--%>
+<%--                <th>Status</th>--%>
+<%--                <th>Actions</th>--%>
+<%--            </tr>--%>
+<%--            </thead>--%>
+<%--            <tbody>--%>
+<%--            <tr>--%>
+<%--                <td>1</td>--%>
+<%--                <td>SUB001</td>--%>
+<%--                <td>Premium</td>--%>
+<%--                <td><span class="badge bg-success">Active</span></td>--%>
+<%--                <td>--%>
+<%--                    <button class="btn btn-warning btn-sm">Renew</button>--%>
+<%--                    <button class="btn btn-danger btn-sm">Cancel</button>--%>
+<%--                </td>--%>
+<%--            </tr>--%>
+<%--            </tbody>--%>
+<%--        </table>--%>
+<%--    </section>--%>
 </div>
 
 

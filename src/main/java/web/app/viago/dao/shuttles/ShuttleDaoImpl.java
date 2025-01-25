@@ -5,7 +5,9 @@ import web.app.viago.model.Shuttle;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,7 +30,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
         PreparedStatement statement = null;
         try {
             connection = DbConnection.getInstance().getConnection();
-            String query = "INSERT INTO shuttles (user_id, departure_city, arrival_city, start_date, end_date, " +
+            String query = "INSERT INTO shuttleservices (user_id, departure_city, arrival_city, start_date, end_date, " +
                     "departure_time, arrival_time, bus_description, max_subscribers, created_at) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             statement = connection.prepareStatement(query);
@@ -45,6 +47,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
             statement.executeUpdate();
 
         } catch (Exception e) {
+            System.out.println("Error creating shuttle: " + e.getMessage());
             throw new RuntimeException("Error while creating shuttle", e);
         }
     }
@@ -56,8 +59,58 @@ public class ShuttleDaoImpl implements ShuttleDAO {
 
     @Override
     public List<Shuttle> getAllShuttles() {
-        return List.of();
+        List<Shuttle> shuttles = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            // SQL query to fetch all shuttle services
+            String query = "SELECT * FROM shuttleservices";
+
+            // Get the database connection
+            Connection connection = DbConnection.getInstance().getConnection();
+
+            // Prepare and execute the SQL statement
+            statement = connection.prepareStatement(query);
+            resultSet = statement.executeQuery();
+
+            // Process the result set
+            while (resultSet.next()) {
+                Shuttle shuttle = new Shuttle();
+
+                // Map each column in the database to the Shuttle object
+                shuttle.setId(resultSet.getInt("id"));
+                shuttle.setUserId(resultSet.getInt("user_id"));
+                shuttle.setDepartureCity(resultSet.getString("departure_city"));
+                shuttle.setArrivalCity(resultSet.getString("arrival_city"));
+                shuttle.setStartDate(resultSet.getDate("start_date"));
+                shuttle.setEndDate(resultSet.getDate("end_date"));
+                shuttle.setDepartureTime(resultSet.getString("departure_time"));
+                shuttle.setArrivalTime(resultSet.getString("arrival_time"));
+                shuttle.setBusDescription(resultSet.getString("bus_description"));
+                shuttle.setMaxSubscribers(resultSet.getInt("max_subscribers"));
+                shuttle.setCreatedAt(resultSet.getTimestamp("created_at"));
+
+                // Add the shuttle to the list
+                shuttles.add(shuttle);
+            }
+        } catch (SQLException e) {
+            // Handle SQL exceptions
+            System.out.println("Error getting all shuttles: " + e.getMessage());
+            throw new RuntimeException("Error while fetching shuttles: " + e.getMessage());
+        } finally {
+            // Close resources to avoid memory leaks
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+            } catch (SQLException e) {
+                System.out.println("Error while closing statement: " + e.getMessage());
+            }
+        }
+
+        return shuttles;
     }
+
 
     @Override
     public List<Shuttle> findByUserId(int userId) {

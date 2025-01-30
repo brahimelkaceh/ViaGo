@@ -11,14 +11,11 @@ public interface ShuttleDAO {
     void create(Shuttle shuttle, int loggedInUserId);
 
     // Get a shuttle by ID
-    Optional<Shuttle> findById(int id);
+    Shuttle findById(int id);
 
     // Get all shuttles
     List<Shuttle> getAllShuttles();
-
-    // Get shuttles by user ID
-    List<Shuttle> findByUserId(int userId);
-
+    
     // Update an existing shuttle
     void update(Shuttle shuttle);
 

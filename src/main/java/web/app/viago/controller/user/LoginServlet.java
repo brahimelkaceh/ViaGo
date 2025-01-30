@@ -36,8 +36,6 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 
-            System.out.println("user logged in" + user);
-
             // Check user role and redirect accordingly
             if ("company".equals(user.getRole())) {
                 // Redirect to the dashboard for company users

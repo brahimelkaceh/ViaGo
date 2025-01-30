@@ -12,6 +12,7 @@
 <body>
 <div class="container my-4">
     <h2 class="text-center">User List</h2>
+    <a href="/dashboard" class="btn btn-success my-1">back</a>
     <table class="table table-striped table-hover">
         <thead class="table-dark">
         <tr>

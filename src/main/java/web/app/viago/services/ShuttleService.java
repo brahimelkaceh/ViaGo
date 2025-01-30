@@ -5,7 +5,6 @@ import web.app.viago.dao.shuttles.ShuttleDaoImpl;
 import web.app.viago.model.Shuttle;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ShuttleService {
 
@@ -25,13 +24,13 @@ public class ShuttleService {
     }
 
     // Get a shuttle by ID
-    public Optional<Shuttle> getShuttleById(int id) {
+    public Shuttle getShuttleById(int id) {
         try {
             return shuttleDao.findById(id);
         } catch (Exception e) {
             System.out.println("Error retrieving shuttle by ID: " + e.getMessage());
         }
-        return Optional.empty();
+        return null;
     }
 
     // Update an existing shuttle

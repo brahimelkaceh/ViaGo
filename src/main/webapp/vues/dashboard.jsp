@@ -38,10 +38,22 @@
 <c:if test="${not empty error}">
     <div class="alert alert-danger mt-2">${error}</div>
 </c:if>
+
 <!-- Main Dashboard -->
 <div class="container mt-4">
     <section id="shuttles" class="mt-5">
-        <h2>Manage Shuttles  </h2>
+        <div class="d-flex justify-content-between">
+            <a class="btn btn-info mb-3" href="/users?action=list">
+                Manage Users
+            </a>
+            <a class="btn btn-danger mb-3" href="/shuttles?action=list">
+                Manage Shuttles
+            </a>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addShuttleModal">
+                Add Shuttle
+            </button>
+        </div>
+        <h2>Manage Shuttles </h2>
 
         <!-- Button to trigger the Add Shuttle Form -->
         <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addShuttleModal">
@@ -78,7 +90,10 @@
                     <td>${shuttle.busDescription}</td>
                     <td>${shuttle.maxSubscribers}</td>
                     <td class="d-flex justify-content-between">
-                        <a href="/dashboard?action=update&id=${shuttle.id}" class="btn btn-warning btn-sm">Edit</a>
+
+                        <a href="/dashboard?action=update&id=${shuttle.id}" class="btn btn-warning btn-sm"
+                           data-bs-toggle="modal" data-bs-target="#editShuttleModal">Edit</a>
+
                         <form id="deleteForm" action="/dashboard" method="POST" style="display:none;">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="${shuttle.id}">
@@ -148,97 +163,105 @@
                 </div>
             </div>
         </div>
+        <!-- Edit Shuttle Modal -->
+        <div class="modal fade" id="editShuttleModal" tabindex="-1" aria-labelledby="editShuttleModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editShuttleModalLabel">Edit Shuttle</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Edit Shuttle Form -->
+                        <form action="editShuttle" method="post">
+                            <input type="hidden" id="editShuttleId" name="id">
+
+                            <div class="mb-3">
+                                <label for="editDepartureCity" class="form-label">Departure City</label>
+                                <input type="text" class="form-control" id="editDepartureCity" name="departureCity"
+                                       required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editArrivalCity" class="form-label">Arrival City</label>
+                                <input type="text" class="form-control" id="editArrivalCity" name="arrivalCity"
+                                       required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editStartDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="editStartDate" name="startDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editEndDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="editEndDate" name="endDate" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editDepartureTime" class="form-label">Departure Time</label>
+                                <input type="time" class="form-control" id="editDepartureTime" name="departureTime"
+                                       required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editArrivalTime" class="form-label">Arrival Time</label>
+                                <input type="time" class="form-control" id="editArrivalTime" name="arrivalTime"
+                                       required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editBusDescription" class="form-label">Bus Description</label>
+                                <textarea class="form-control" id="editBusDescription" name="busDescription"
+                                          required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMaxSubscribers" class="form-label">Max Subscribers</label>
+                                <input type="number" class="form-control" id="editMaxSubscribers" name="maxSubscribers"
+                                       required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <%--Delete Shuttle Modal--%>
+        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmDeleteModalLabel">Confirm Deletion</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete this user? This action cannot be undone.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
-    <!-- Section: Requests -->
-<%--    <section id="requests">--%>
-<%--        <h2>Manage Requests</h2>--%>
-<%--        <table class="table table-striped">--%>
-<%--            <thead>--%>
-<%--            <tr>--%>
-<%--                <th>#</th>--%>
-<%--                <th>Request ID</th>--%>
-<%--                <th>Customer Name</th>--%>
-<%--                <th>Status</th>--%>
-<%--                <th>Actions</th>--%>
-<%--            </tr>--%>
-<%--            </thead>--%>
-<%--            <tbody>--%>
-<%--            <tr>--%>
-<%--                <td>1</td>--%>
-<%--                <td>REQ123</td>--%>
-<%--                <td>John Doe</td>--%>
-<%--                <td><span class="badge bg-warning">Pending</span></td>--%>
-<%--                <td>--%>
-<%--                    <button class="btn btn-success btn-sm">Approve</button>--%>
-<%--                    <button class="btn btn-danger btn-sm">Reject</button>--%>
-<%--                </td>--%>
-<%--            </tr>--%>
-<%--            </tbody>--%>
-<%--        </table>--%>
-<%--    </section>--%>
-
-    <!-- Section: Users -->
-<%--    <section id="users" class="mt-5">--%>
-<%--        <h2>Manage Users</h2>--%>
-<%--        <table class="table table-striped">--%>
-<%--            <thead>--%>
-<%--            <tr>--%>
-<%--                <th>#</th>--%>
-<%--                <th>User ID</th>--%>
-<%--                <th>Name</th>--%>
-<%--                <th>Email</th>--%>
-<%--                <th>Status</th>--%>
-<%--                <th>Actions</th>--%>
-<%--            </tr>--%>
-<%--            </thead>--%>
-<%--            <tbody>--%>
-<%--            <tr>--%>
-<%--                <td>1</td>--%>
-<%--                <td>USR001</td>--%>
-<%--                <td>Jane Smith</td>--%>
-<%--                <td>jane@example.com</td>--%>
-<%--                <td><span class="badge bg-success">Active</span></td>--%>
-<%--                <td>--%>
-<%--                    <button class="btn btn-primary btn-sm">Edit</button>--%>
-<%--                    <button class="btn btn-danger btn-sm">Deactivate</button>--%>
-<%--                </td>--%>
-<%--            </tr>--%>
-<%--            </tbody>--%>
-<%--        </table>--%>
-<%--    </section>--%>
-
-
-
-    <!-- Section: Subscriptions -->
-<%--    <section id="subscriptions" class="mt-5">--%>
-<%--        <h2>Manage Subscriptions</h2>--%>
-<%--        <table class="table table-striped">--%>
-<%--            <thead>--%>
-<%--            <tr>--%>
-<%--                <th>#</th>--%>
-<%--                <th>Subscription ID</th>--%>
-<%--                <th>Plan</th>--%>
-<%--                <th>Status</th>--%>
-<%--                <th>Actions</th>--%>
-<%--            </tr>--%>
-<%--            </thead>--%>
-<%--            <tbody>--%>
-<%--            <tr>--%>
-<%--                <td>1</td>--%>
-<%--                <td>SUB001</td>--%>
-<%--                <td>Premium</td>--%>
-<%--                <td><span class="badge bg-success">Active</span></td>--%>
-<%--                <td>--%>
-<%--                    <button class="btn btn-warning btn-sm">Renew</button>--%>
-<%--                    <button class="btn btn-danger btn-sm">Cancel</button>--%>
-<%--                </td>--%>
-<%--            </tr>--%>
-<%--            </tbody>--%>
-<%--        </table>--%>
-<%--    </section>--%>
 </div>
 
+<script>
+    // Store the ID of the user to be deleted
+    let userIdToDelete = null;
 
+    // Set the user ID in the modal when the Delete button is clicked
+    function setDeleteId(userId) {
+        userIdToDelete = userId;
+    }
+
+    // When the user clicks the "Confirm Delete" button in the modal
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
+        if (userIdToDelete !== null) {
+            // Set the ID of the user to be deleted in the form
+            document.querySelector('#deleteForm input[name="id"]').value = userIdToDelete;
+            // Submit the form to delete the user
+            document.getElementById('deleteForm').submit();
+        }
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>

@@ -74,6 +74,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
                         rs.getString("arrival_time"),
                         rs.getString("bus_description"),
                         rs.getInt("max_subscribers"),
+                        rs.getInt("num_subscribers"),
                         rs.getTimestamp("created_at")
                 );
             } else {

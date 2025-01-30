@@ -13,6 +13,7 @@ public class Shuttle {
     private String arrivalTime;
     private String busDescription;
     private int maxSubscribers;
+    private int numSubscribers;
     private Date createdAt;
 
     // Constructors
@@ -20,7 +21,7 @@ public class Shuttle {
     }
 
     public Shuttle(int id, int userId, String departureCity, String arrivalCity, Date startDate, Date endDate,
-                   String departureTime, String arrivalTime, String busDescription, int maxSubscribers, Date createdAt) {
+                   String departureTime, String arrivalTime, String busDescription, int maxSubscribers, int numSubscribers, Date createdAt) {
         this.id = id;
         this.userId = userId;
         this.departureCity = departureCity;
@@ -31,6 +32,7 @@ public class Shuttle {
         this.arrivalTime = arrivalTime;
         this.busDescription = busDescription;
         this.maxSubscribers = maxSubscribers;
+        this.numSubscribers = numSubscribers;
         this.createdAt = createdAt;
     }
 
@@ -115,6 +117,14 @@ public class Shuttle {
         this.maxSubscribers = maxSubscribers;
     }
 
+    public int getNumSubscribers() {
+        return numSubscribers;
+    }
+
+    public void setNumSubscribers(int numSubscribers) {
+        this.numSubscribers = numSubscribers;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -136,6 +146,7 @@ public class Shuttle {
                 ", arrivalTime='" + arrivalTime + '\'' +
                 ", busDescription='" + busDescription + '\'' +
                 ", maxSubscribers=" + maxSubscribers +
+                ", numSubscribers=" + numSubscribers +
                 ", createdAt=" + createdAt +
                 '}';
     }

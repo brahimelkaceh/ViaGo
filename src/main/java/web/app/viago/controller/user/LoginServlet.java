@@ -42,7 +42,7 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("/dashboard");
             } else {
                 // Redirect to subscriptions page for other roles
-                response.sendRedirect("subscriptions.jsp");
+                response.sendRedirect("/subscriptions");
             }
         } else {
             // Invalid credentials, show error message

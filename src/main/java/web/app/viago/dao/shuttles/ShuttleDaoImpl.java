@@ -100,7 +100,6 @@ public class ShuttleDaoImpl implements ShuttleDAO {
         List<Shuttle> shuttles = new ArrayList<>();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
-
         try {
             // SQL query to fetch all shuttle services
             String query = "SELECT * FROM shuttleservices";

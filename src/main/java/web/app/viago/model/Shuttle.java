@@ -15,6 +15,8 @@ public class Shuttle {
     private int maxSubscribers;
     private int numSubscribers;
     private Date createdAt;
+    private String status; // "subscribed", "not_subscribed", etc.
+    private boolean isSubscribed; // This is the new flag
 
     // Constructors
     public Shuttle() {
@@ -133,6 +135,11 @@ public class Shuttle {
         this.createdAt = createdAt;
     }
 
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public boolean isSubscribed() { return isSubscribed; }
+    public void setIsSubscribed(boolean isSubscribed) { this.isSubscribed = isSubscribed; }
     @Override
     public String toString() {
         return "Shuttle{" +

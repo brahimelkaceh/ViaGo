@@ -1,19 +1,27 @@
 package web.app.viago.model;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 public class Subscription {
     private int id;
     private int userId;
     private int shuttleId;
     private String status; // Enum as String (PENDING, CONFIRMED, CANCELLED)
-    private Timestamp createdAt;
+    private Date createdAt;
 
     public Subscription() {
     }
 
-    public Subscription(int id, int userId, int shuttleId, String status, Timestamp createdAt) {
+    public Subscription(int id, int userId, int shuttleId, String status, Date createdAt) {
         this.id = id;
+        this.userId = userId;
+        this.shuttleId = shuttleId;
+        this.status = status;
+        this.createdAt = createdAt;
+    }
+
+    public Subscription( int userId, int shuttleId, String status, Date createdAt) {
         this.userId = userId;
         this.shuttleId = shuttleId;
         this.status = status;
@@ -53,11 +61,11 @@ public class Subscription {
         this.status = status;
     }
 
-    public Timestamp getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 

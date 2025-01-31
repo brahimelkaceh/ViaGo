@@ -78,7 +78,7 @@
                                 Arrival:</strong> ${fn:substring(shuttle.arrivalTime, 0, 5)}</li>
                             <li class="list-group-item"><strong>🚌 Bus:</strong> ${shuttle.busDescription}</li>
                             <li class="list-group-item"><strong>👥 Max
-                                Passengers:</strong> ${shuttle.maxSubscribers} - ${shuttle.numSubscribers}
+                                Passengers:</strong> ${shuttle.maxSubscribers}
                             </li>
                         </ul>
                         <div class="d-flex justify-content-between align-items-center mt-3">
@@ -86,12 +86,11 @@
                             <form action="/subscriptions" method="POST" class="d-inline">
                                 <input type="hidden" name="action" value="subscribe">
                                 <input type="hidden" name="id" value="${shuttle.id}">
-                                <input type="hidden" name="id" value="${shuttle.id}">
-                                <button type="submit" class="btn btn-primary btn-sm"
-                                >
-                                        ${shuttle.maxSubscribers == shuttle.numSubscribers ? 'Fully Subscribed' : 'Subscribe'}
+                                <input type="hidden" name="status" value="subscribed">
+                                <button type="submit"
+                                        class="btn btn-${shuttle.status eq 'subscribed' ? 'outline-primary' : (shuttle.status eq 'canceled' ? 'danger' : 'primary')} btn-sm">
+                                        ${shuttle.status}
                                 </button>
-
                             </form>
 
 

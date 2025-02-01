@@ -24,10 +24,20 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
 
     @Override
     public void createSubscribe(Subscription subscribe) {
-        String query = "INSERT INTO subscriptions (user_id, shuttle_id, status, created_at) VALUES (?, ?, ?, ?)";
-        String updateQuery = "UPDATE shuttleservices SET num_subscribers = num_subscribers + 1 WHERE id = ?";
+        PreparedStatement statement = null;
+        PreparedStatement updateShuttleStatement = null;
+
         try {
-            PreparedStatement statement = connection.prepareStatement(query);
+            connection = DbConnection.getInstance().getConnection();
+            String query = "INSERT INTO subscriptions (user_id, shuttle_id, status, created_at) VALUES (?, ?, ?, ?)";
+            String updateQuery = "UPDATE shuttleservices SET num_subscribers = num_subscribers + 1 WHERE id = ?";
+
+            statement = connection.prepareStatement(query);
+            updateShuttleStatement = connection.prepareStatement(updateQuery);
+
+            connection.setAutoCommit(false); // Start transaction
+
+            // Insert subscription
             statement.setInt(1, subscribe.getUserId());
             statement.setInt(2, subscribe.getShuttleId());
             statement.setString(3, subscribe.getStatus());
@@ -40,9 +50,11 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 System.out.println("Failed to insert subscription.");
             }
 
-            PreparedStatement updateShuttleStatement = connection.prepareStatement(updateQuery);
+            // Update shuttle subscriber count
             updateShuttleStatement.setInt(1, subscribe.getShuttleId());
             updateShuttleStatement.executeUpdate();
+
+            connection.commit(); // Commit transaction
         } catch (SQLException e) {
             System.err.println("SQL Error while creating subscription: " + e.getMessage());
             throw new RuntimeException(e);
@@ -130,11 +142,33 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
     }
 
     @Override
+    public Subscription getSubscriptionByUserIdAndShuttleId(int userId, int shuttleId) {
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            connection = DbConnection.getInstance().getConnection();
+            String query = "SELECT * FROM subscriptions WHERE user_id = ? AND shuttle_id = ?";
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, userId);
+            statement.setInt(2, shuttleId);
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                return new Subscription(
+                        rs.getInt("id"),
+                        rs.getString("Status")
+                );
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
     public void updateSubscriptionStatus(Subscription subscription) {
         PreparedStatement statement = null;
         PreparedStatement updateShuttleStatement = null;
-
-
         try {
             connection = DbConnection.getInstance().getConnection();
             connection.setAutoCommit(false);
@@ -155,15 +189,17 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 updateStatement.executeUpdate();
 
                 // If the user cancels, decrement num_subscribers
-                if ("subscribed".equals(subscription.getStatus())) {
-                    String decrementQuery = "UPDATE shuttleservices SET num_subscribers = num_subscribers - 1 WHERE id = ?";
-                    updateShuttleStatement = connection.prepareStatement(decrementQuery);
-                    updateShuttleStatement.setInt(1, shuttleId);
-                    updateShuttleStatement.executeUpdate();
+                String decrementQuery;
+                if ("canceled".equals(subscription.getStatus())) {
+                    decrementQuery = "UPDATE shuttleservices SET num_subscribers = num_subscribers - 1 WHERE id = ?";
+                } else {
+                    decrementQuery = "UPDATE shuttleservices SET num_subscribers = num_subscribers + 1 WHERE id = ?";
                 }
+                updateShuttleStatement = connection.prepareStatement(decrementQuery);
+                updateShuttleStatement.setInt(1, shuttleId);
+                updateShuttleStatement.executeUpdate();
 
                 connection.commit();
-            } else {
             }
         } catch (Exception e) {
             System.out.println("Error updating subscription: " + e.getMessage());

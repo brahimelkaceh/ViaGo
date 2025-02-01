@@ -11,6 +11,7 @@ import web.app.viago.model.Subscription;
 import web.app.viago.model.User;
 import web.app.viago.services.ShuttleService;
 import web.app.viago.services.SubscriptionService;
+import web.app.viago.services.UserService;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,15 +20,16 @@ import java.util.Map;
 
 @WebServlet(name = "subscriptionServlet", urlPatterns = "/subscriptions")
 public class SubscriptionServlet extends HttpServlet {
-    private ShuttleService shuttleService;
-    private SubscriptionService subscriptionService;
 
-    @Override
-    public void init() throws ServletException {
-        super.init();
+    private final ShuttleService shuttleService;
+    private final SubscriptionService subscriptionService;
+    private final UserService userService;
+
+    // ✅ Constructor Injection (Best Practice)
+    public SubscriptionServlet() {
+        this.shuttleService = new ShuttleService();
         this.subscriptionService = new SubscriptionService();
-        this.shuttleService = new ShuttleService(); // Initialize the service
-
+        this.userService = new UserService();  // Initialize properly
     }
 
     @Override
@@ -47,15 +49,24 @@ public class SubscriptionServlet extends HttpServlet {
         int userId = loggedInUser.getId();
         String status = request.getParameter("status");
         if ("canceled".equals(action)) {
-            try {
-                Subscription subscription = new Subscription();
-                subscription.setShuttleId(shuttleId);
-                subscription.setUserId(userId);
-                subscription.setStatus("subscribed");
-                subscription.setCreatedAt(new java.util.Date());
-                subscriptionService.createSubscription(subscription);
-                response.sendRedirect("/subscriptions?action=list");  // Redirect to the user list
+            Subscription existSubscription = subscriptionService.getSubscriptionByUserIdAndShuttleId(userId, shuttleId);
 
+            try {
+                if (existSubscription != null) {
+                    int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
+                    Subscription subscriptionUpdate = new Subscription(subscriptionId, "subscribed");
+                    subscriptionService.updateSubscription(subscriptionUpdate);
+                } else {
+                    System.out.println("Creating a new subscription...");
+                    Subscription subscription = new Subscription();
+                    subscription.setShuttleId(shuttleId);
+                    subscription.setUserId(userId);
+                    subscription.setStatus("subscribed");
+                    subscription.setCreatedAt(new java.util.Date());
+                    subscriptionService.createSubscription(subscription); // Create new subscription
+                }
+
+                response.sendRedirect("/subscriptions?action=list"); // Redirect to the user list
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             }
@@ -74,8 +85,6 @@ public class SubscriptionServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String action = request.getParameter("action");
-
         HttpSession session = request.getSession();
         User loggedInUser = (User) session.getAttribute("user");
 
@@ -83,8 +92,9 @@ public class SubscriptionServlet extends HttpServlet {
             response.sendRedirect("vues/login.jsp");
             return;
         }
+
         try {
-            // Fetch all shuttles and the user's subscriptions
+            // Fetch shuttles and subscriptions
             List<Shuttle> shuttles = shuttleService.getAllShuttles();
             List<Subscription> subscriptions = subscriptionService.getSubscriptionsByUserId(loggedInUser.getId());
 
@@ -92,38 +102,37 @@ public class SubscriptionServlet extends HttpServlet {
             Map<Integer, Map<String, Object>> subscriptionStatusMap = new HashMap<>();
             for (Subscription subscription : subscriptions) {
                 Map<String, Object> details = new HashMap<>();
-                details.put("subscriptionId", subscription.getId()); // Subscription ID
-                details.put("status", subscription.getStatus());     // Subscription Status
+                details.put("subscriptionId", subscription.getId());
+                details.put("status", subscription.getStatus());
                 subscriptionStatusMap.put(subscription.getShuttleId(), details);
             }
 
-            // Iterate over shuttles and set the status for each
+            // Iterate over shuttles and get owner details
             for (Shuttle shuttle : shuttles) {
                 Map<String, Object> subscriptionDetails = subscriptionStatusMap.get(shuttle.getId());
 
+                // ✅ Ensure userService is initialized before calling it
+                User owner = userService.getUserById(shuttle.getUserId());
+
                 if (subscriptionDetails != null) {
-                    // If the user is subscribed to this shuttle, set the status
                     String status = (String) subscriptionDetails.get("status");
                     int subscriptionId = (int) subscriptionDetails.get("subscriptionId");
                     shuttle.setStatus(status);
                     shuttle.setIsSubscribed(true);
                     shuttle.setSubscriptionId(subscriptionId);
+                    shuttle.setShuttleOwner(String.valueOf(owner.getName()));  // 🔥 Add owner details to shuttle
+
                 } else {
-                    // Default values for non-subscribed shuttles
                     shuttle.setStatus("canceled");
                     shuttle.setIsSubscribed(false);
                 }
             }
-
-            // Pass the updated shuttles to the JSP
             System.out.println("shuttles : " + shuttles);
             request.setAttribute("shuttles", shuttles);
             request.getRequestDispatcher("/subscriptions/list.jsp").forward(request, response);
         } catch (Exception e) {
-            request.setAttribute("error", "Unable to fetch shuttles. Please try again later.");
+            request.setAttribute("error", "Unable to fetch shuttles. Please try again later. " + e.getMessage());
             request.getRequestDispatcher("/vues/dashboard.jsp").forward(request, response);
         }
-
-
     }
 }

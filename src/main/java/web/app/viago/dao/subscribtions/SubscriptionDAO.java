@@ -14,5 +14,7 @@ public interface SubscriptionDAO {
 
     Subscription getSubscriptionById(int id);
 
+    Subscription getSubscriptionByUserIdAndShuttleId(int userId, int shuttleId);
+
     void updateSubscriptionStatus(Subscription subscribe);
 }

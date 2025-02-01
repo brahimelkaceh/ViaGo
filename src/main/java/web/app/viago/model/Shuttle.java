@@ -18,13 +18,14 @@ public class Shuttle {
     private String status; // "subscribed", "not_subscribed", etc.
     private boolean isSubscribed; // This is the new flag
     private int subscriptionId;
+    private String shuttleOwner;
 
     // Constructors
     public Shuttle() {
     }
 
     public Shuttle(int id, int userId, String departureCity, String arrivalCity, Date startDate, Date endDate,
-                   String departureTime, String arrivalTime, String busDescription, int maxSubscribers, int numSubscribers, Date createdAt) {
+                   String departureTime, String arrivalTime, String busDescription, int maxSubscribers, int numSubscribers, String shuttleOwner, Date createdAt) {
         this.id = id;
         this.userId = userId;
         this.departureCity = departureCity;
@@ -36,6 +37,7 @@ public class Shuttle {
         this.busDescription = busDescription;
         this.maxSubscribers = maxSubscribers;
         this.numSubscribers = numSubscribers;
+        this.shuttleOwner = shuttleOwner;
         this.createdAt = createdAt;
     }
 
@@ -161,6 +163,14 @@ public class Shuttle {
         this.subscriptionId = subscriptionId;
     }
 
+    public void setShuttleOwner(String name) {
+        this.shuttleOwner = name;
+    }
+
+    public String getShuttleOwner() {
+        return shuttleOwner;
+    }
+
     @Override
     public String toString() {
         return "Shuttle{" +
@@ -175,7 +185,10 @@ public class Shuttle {
                 ", busDescription='" + busDescription + '\'' +
                 ", maxSubscribers=" + maxSubscribers +
                 ", numSubscribers=" + numSubscribers +
+                ", User Name+ " + shuttleOwner +
                 ", createdAt=" + createdAt +
                 '}';
     }
+
+
 }

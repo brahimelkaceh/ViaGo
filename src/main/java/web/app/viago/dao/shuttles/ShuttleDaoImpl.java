@@ -30,20 +30,23 @@ public class ShuttleDaoImpl implements ShuttleDAO {
         PreparedStatement statement = null;
         try {
             connection = DbConnection.getInstance().getConnection();
-            String query = "INSERT INTO shuttleservices (user_id, departure_city, arrival_city, start_date, end_date, " +
-                    "departure_time, arrival_time, bus_description, max_subscribers, created_at) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO shuttleservices (user_id, user_name, departure_city, arrival_city, start_date, end_date, " +
+                    "departure_time, arrival_time, bus_description, max_subscribers, num_subscribers, created_at) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
             statement = connection.prepareStatement(query);
             statement.setInt(1, loggedInUserId); // Set the user_id to the logged-in user's ID
-            statement.setString(2, shuttle.getDepartureCity());
-            statement.setString(3, shuttle.getArrivalCity());
-            statement.setDate(4, new java.sql.Date(shuttle.getStartDate().getTime()));
-            statement.setDate(5, new java.sql.Date(shuttle.getEndDate().getTime()));
-            statement.setString(6, shuttle.getDepartureTime());
-            statement.setString(7, shuttle.getArrivalTime());
-            statement.setString(8, shuttle.getBusDescription());
-            statement.setInt(9, shuttle.getMaxSubscribers());
-            statement.setTimestamp(10, new java.sql.Timestamp(shuttle.getCreatedAt().getTime()));
+            statement.setString(2, shuttle.getShuttleOwner());
+            statement.setString(3, shuttle.getDepartureCity());
+            statement.setString(4, shuttle.getArrivalCity());
+            statement.setDate(5, new java.sql.Date(shuttle.getStartDate().getTime()));
+            statement.setDate(6, new java.sql.Date(shuttle.getEndDate().getTime()));
+            statement.setString(7, shuttle.getDepartureTime());
+            statement.setString(8, shuttle.getArrivalTime());
+            statement.setString(9, shuttle.getBusDescription());
+            statement.setInt(10, shuttle.getMaxSubscribers());
+            statement.setInt(11, shuttle.getNumSubscribers());
+            statement.setTimestamp(12, new java.sql.Timestamp(shuttle.getCreatedAt().getTime()));
             statement.executeUpdate();
 
         } catch (Exception e) {
@@ -75,6 +78,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
                         rs.getString("bus_description"),
                         rs.getInt("max_subscribers"),
                         rs.getInt("num_subscribers"),
+                        rs.getString("user_name"),
                         rs.getTimestamp("created_at")
                 );
             } else {
@@ -127,6 +131,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
                 shuttle.setBusDescription(resultSet.getString("bus_description"));
                 shuttle.setMaxSubscribers(resultSet.getInt("max_subscribers"));
                 shuttle.setNumSubscribers(resultSet.getInt("num_subscribers"));
+                shuttle.setShuttleOwner(resultSet.getString("user_name"));
                 shuttle.setCreatedAt(resultSet.getTimestamp("created_at"));
 
                 // Add the shuttle to the list

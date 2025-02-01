@@ -1,6 +1,5 @@
 package web.app.viago.services;
 
-import web.app.viago.dao.shuttles.ShuttleDaoImpl;
 import web.app.viago.dao.subscribtions.SubscriptionDAO;
 import web.app.viago.dao.subscribtions.SubscriptionDAOImpl;
 import web.app.viago.model.Subscription;
@@ -37,6 +36,15 @@ public class SubscriptionService {
             subscriptionDAO.updateSubscriptionStatus(subscriptionUpdate);
         } catch (Exception e) {
             System.out.println("Error updating subscription: " + e.getMessage());
+        }
+    }
+
+    public Subscription getSubscriptionByUserIdAndShuttleId(int userId, int shuttleId) {
+        try {
+            return subscriptionDAO.getSubscriptionByUserIdAndShuttleId(userId, shuttleId);
+        } catch (Exception e) {
+            System.out.println("Error while getting subscription by user id: " + e.getMessage());
+            return null;
         }
     }
 }

@@ -33,6 +33,7 @@ public class Subscription {
         this.id = subscriptionId;
     }
 
+
     // Getters and Setters
     public int getId() {
         return id;

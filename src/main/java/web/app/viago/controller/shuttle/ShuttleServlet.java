@@ -107,6 +107,8 @@ public class ShuttleServlet extends HttpServlet {
                         //            // Create a Shuttle object
                         Shuttle shuttle = new Shuttle();
                         shuttle.setDepartureCity(departureCity);
+                        assert loggedInUser != null;
+                        shuttle.setShuttleOwner(loggedInUser.getName());
                         shuttle.setArrivalCity(arrivalCity);
                         shuttle.setStartDate(startDate);
                         shuttle.setEndDate(endDate);
@@ -114,10 +116,10 @@ public class ShuttleServlet extends HttpServlet {
                         shuttle.setArrivalTime(arrivalTime);
                         shuttle.setBusDescription(busDescription);
                         shuttle.setMaxSubscribers(maxSubscribers);
+                        shuttle.setNumSubscribers(0);
                         shuttle.setCreatedAt(new java.util.Date());
 
                         // Call the DAO to persist the shuttle
-                        assert loggedInUser != null;
                         shuttleService.createShuttle(shuttle, loggedInUser.getId());
 
                         // Redirect to the shuttle list page after adding the shuttle

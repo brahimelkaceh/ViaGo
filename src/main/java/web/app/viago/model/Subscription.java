@@ -21,11 +21,16 @@ public class Subscription {
         this.createdAt = createdAt;
     }
 
-    public Subscription( int userId, int shuttleId, String status, Date createdAt) {
+    public Subscription(int userId, int shuttleId, String status, Date createdAt) {
         this.userId = userId;
         this.shuttleId = shuttleId;
         this.status = status;
         this.createdAt = createdAt;
+    }
+
+    public Subscription(int subscriptionId, String status) {
+        this.status = status;
+        this.id = subscriptionId;
     }
 
     // Getters and Setters

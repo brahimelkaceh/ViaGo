@@ -15,7 +15,7 @@
 <!-- Retrieve the User object from the session -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">ViaGo</a>
+        <a class="navbar-brand" href="/">ViaGo</a>
     </div>
 
     <%
@@ -40,25 +40,6 @@
 
 <div class="container py-4">
     <h1 class="text-center mb-4">Browse Subscriptions</h1>
-
-    <!-- Search and Filter Section -->
-    <form class="mb-4">
-        <div class="row g-3">
-            <div class="col-md-4">
-                <input type="text" name="departure_city" class="form-control" placeholder="Departure City">
-            </div>
-            <div class="col-md-4">
-                <input type="text" name="arrival_city" class="form-control" placeholder="Arrival City">
-            </div>
-            <div class="col-md-2">
-                <input type="date" name="start_date" class="form-control" placeholder="Start Date">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Search</button>
-            </div>
-        </div>
-    </form>
-
     <!-- Subscription List -->
     <div class="row">
         <!-- Replace with dynamic data -->
@@ -78,18 +59,25 @@
                                 Arrival:</strong> ${fn:substring(shuttle.arrivalTime, 0, 5)}</li>
                             <li class="list-group-item"><strong>🚌 Bus:</strong> ${shuttle.busDescription}</li>
                             <li class="list-group-item"><strong>👥 Max
-                                Passengers:</strong> ${shuttle.maxSubscribers}
+                                Passengers:</strong> ${shuttle.maxSubscribers} - ${shuttle.numSubscribers}
                             </li>
                         </ul>
                         <div class="d-flex justify-content-between align-items-center mt-3">
-                            <span class="badge bg-success px-3 py-2">✅ Open</span>
+                            <c:set var="remainingSlots" value="${shuttle.maxSubscribers - shuttle.numSubscribers}"/>
+                            <span class="badge ${remainingSlots > 0 ? 'bg-success' : 'bg-danger'} px-3 py-2">
+                                    ${remainingSlots > 0 ? '✅ Open' : '❌ Full'}
+                            </span>
                             <form action="/subscriptions" method="POST" class="d-inline">
-                                <input type="hidden" name="action" value="subscribe">
+                                <input type="hidden" name="action"
+                                       value=${shuttle.status}>
+                                <input type="hidden" name="subscriptionId" value= ${shuttle.subscriptionId}>
                                 <input type="hidden" name="id" value="${shuttle.id}">
-                                <input type="hidden" name="status" value="subscribed">
+                                <input type="hidden" name="status"
+                                       value=${shuttle.status}>
                                 <button type="submit"
-                                        class="btn btn-${shuttle.status eq 'subscribed' ? 'outline-primary' : (shuttle.status eq 'canceled' ? 'danger' : 'primary')} btn-sm">
-                                        ${shuttle.status}
+                                    ${remainingSlots le 0 && shuttle.status eq 'canceled' ? 'disabled' : ''}
+                                        class="btn btn-${shuttle.status eq 'subscribed' ? 'outline-primary' : 'primary'} btn-sm">
+                                        ${shuttle.status eq 'canceled' ? 'Subscribe' : 'Subscribed'}
                                 </button>
                             </form>
 

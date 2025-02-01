@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SubscriptionDAOImpl implements SubscriptionDAO {
-    private  Connection connection;
+    private Connection connection;
 
     public SubscriptionDAOImpl() {
         try {
@@ -24,11 +24,10 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
 
     @Override
     public void createSubscribe(Subscription subscribe) {
-        System.out.println("Executing createSubscribe() in DAO");
-
         String query = "INSERT INTO subscriptions (user_id, shuttle_id, status, created_at) VALUES (?, ?, ?, ?)";
-
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        String updateQuery = "UPDATE shuttleservices SET num_subscribers = num_subscribers + 1 WHERE id = ?";
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
             statement.setInt(1, subscribe.getUserId());
             statement.setInt(2, subscribe.getShuttleId());
             statement.setString(3, subscribe.getStatus());
@@ -41,6 +40,9 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 System.out.println("Failed to insert subscription.");
             }
 
+            PreparedStatement updateShuttleStatement = connection.prepareStatement(updateQuery);
+            updateShuttleStatement.setInt(1, subscribe.getShuttleId());
+            updateShuttleStatement.executeUpdate();
         } catch (SQLException e) {
             System.err.println("SQL Error while creating subscription: " + e.getMessage());
             throw new RuntimeException(e);
@@ -128,23 +130,43 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
     }
 
     @Override
-    public String updateSubscriptionStatus(int id, String status) {
-        String query = "UPDATE subscriptions SET status = ? WHERE id = ?";
+    public void updateSubscriptionStatus(Subscription subscription) {
+        PreparedStatement statement = null;
+        PreparedStatement updateShuttleStatement = null;
 
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setString(1, status);
-            statement.setInt(2, id);
 
-            int rowsUpdated = statement.executeUpdate();
-            if (rowsUpdated > 0) {
-                return "Subscription status updated successfully.";
+        try {
+            connection = DbConnection.getInstance().getConnection();
+            connection.setAutoCommit(false);
+            // Get the current subscription
+            String getSubscriptionQuery = "SELECT shuttle_id FROM subscriptions WHERE id = ?";
+            statement = connection.prepareStatement(getSubscriptionQuery);
+            statement.setInt(1, subscription.getId());
+            ResultSet rs = statement.executeQuery();
+
+            if (rs.next()) {
+                int shuttleId = rs.getInt("shuttle_id");
+                // Update subscription status
+                String updateQuery = "UPDATE subscriptions SET status = ? WHERE id = ?";
+                PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+                updateStatement.setString(1, subscription.getStatus());
+                updateStatement.setInt(2, subscription.getId());
+                System.out.println("subscriptions updated" + subscription.getStatus() + " " + subscription.getId());
+                updateStatement.executeUpdate();
+
+                // If the user cancels, decrement num_subscribers
+                if ("subscribed".equals(subscription.getStatus())) {
+                    String decrementQuery = "UPDATE shuttleservices SET num_subscribers = num_subscribers - 1 WHERE id = ?";
+                    updateShuttleStatement = connection.prepareStatement(decrementQuery);
+                    updateShuttleStatement.setInt(1, shuttleId);
+                    updateShuttleStatement.executeUpdate();
+                }
+
+                connection.commit();
             } else {
-                return "Subscription not found.";
             }
-
-        } catch (SQLException e) {
-            System.err.println("Error updating subscription status: " + e.getMessage());
-            return "Error updating subscription.";
+        } catch (Exception e) {
+            System.out.println("Error updating subscription: " + e.getMessage());
         }
     }
 }

@@ -53,7 +53,7 @@
     <div class="container">
         <h1>Welcome to Viago</h1>
         <p>Your one-stop solution for managing shuttle subscriptions and travel requests.</p>
-        <a href="subscriptions.jsp" class="btn btn-primary btn-lg">Explore Subscriptions</a>
+        <a href="subscriptions" class="btn btn-primary btn-lg">Explore Subscriptions</a>
         <a href="register.jsp" class="btn btn-outline-light btn-lg">Register Now</a>
     </div>
 </section>

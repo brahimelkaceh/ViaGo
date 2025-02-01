@@ -17,6 +17,7 @@ public class Shuttle {
     private Date createdAt;
     private String status; // "subscribed", "not_subscribed", etc.
     private boolean isSubscribed; // This is the new flag
+    private int subscriptionId;
 
     // Constructors
     public Shuttle() {
@@ -36,6 +37,10 @@ public class Shuttle {
         this.maxSubscribers = maxSubscribers;
         this.numSubscribers = numSubscribers;
         this.createdAt = createdAt;
+    }
+
+    public Shuttle(int shuttleId) {
+        this.id = shuttleId;
     }
 
     // Getters and Setters
@@ -135,11 +140,27 @@ public class Shuttle {
         this.createdAt = createdAt;
     }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public String getStatus() {
+        return status;
+    }
 
-    public boolean isSubscribed() { return isSubscribed; }
-    public void setIsSubscribed(boolean isSubscribed) { this.isSubscribed = isSubscribed; }
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
+    public void setIsSubscribed(boolean isSubscribed) {
+        this.isSubscribed = isSubscribed;
+    }
+
+    public int getSubscriptionId() {
+        return subscriptionId;
+    }
+
+    public void setSubscriptionId(int subscriptionId) {
+        this.subscriptionId = subscriptionId;
+    }
+
     @Override
     public String toString() {
         return "Shuttle{" +

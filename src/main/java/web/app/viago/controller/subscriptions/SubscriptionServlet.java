@@ -38,28 +38,37 @@ public class SubscriptionServlet extends HttpServlet {
 
         if (loggedInUser == null) {
             System.out.println("Error: No logged-in user found.");
-            response.sendRedirect("/login.jsp");
+            response.sendRedirect("vues/login.jsp");
             return;
         }
 
         String action = request.getParameter("action");
         int shuttleId = Integer.parseInt(request.getParameter("id"));
         int userId = loggedInUser.getId();
-        if ("subscribe".equals(action)) {
+        String status = request.getParameter("status");
+        if ("canceled".equals(action)) {
             try {
-                String status = request.getParameter("status");
                 Subscription subscription = new Subscription();
                 subscription.setShuttleId(shuttleId);
                 subscription.setUserId(userId);
-                subscription.setStatus(status);
+                subscription.setStatus("subscribed");
                 subscription.setCreatedAt(new java.util.Date());
                 subscriptionService.createSubscription(subscription);
+                response.sendRedirect("/subscriptions?action=list");  // Redirect to the user list
 
             } catch (Exception e) {
                 System.out.println("Error: " + e.getMessage());
             }
-
-            response.sendRedirect("/subscriptions/list.jsp");
+        } else if ("subscribed".equals(action)) {
+            int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
+            Shuttle shuttleUpdate = new Shuttle(shuttleId);
+            shuttleService.updateShuttle(shuttleUpdate);
+            Subscription subscriptionUpdate = new Subscription(subscriptionId, "canceled");
+            subscriptionService.updateSubscription(subscriptionUpdate);
+            System.out.println(", id: " + shuttleId + ", status: " + status + ", id: " + subscriptionId);
+            response.sendRedirect("/subscriptions?action=list");  // Redirect to the user list
+        } else {
+            response.sendRedirect("/subscriptions?action=list");  // Redirect to the user list
         }
     }
 
@@ -71,7 +80,7 @@ public class SubscriptionServlet extends HttpServlet {
         User loggedInUser = (User) session.getAttribute("user");
 
         if (loggedInUser == null) {
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("vues/login.jsp");
             return;
         }
         try {
@@ -79,34 +88,42 @@ public class SubscriptionServlet extends HttpServlet {
             List<Shuttle> shuttles = shuttleService.getAllShuttles();
             List<Subscription> subscriptions = subscriptionService.getSubscriptionsByUserId(loggedInUser.getId());
 
-            // Create a map to store subscriptions by shuttleId for fast lookup
-            Map<Integer, String> subscriptionStatusMap = new HashMap<>();
+            // Store subscription details for each shuttle
+            Map<Integer, Map<String, Object>> subscriptionStatusMap = new HashMap<>();
             for (Subscription subscription : subscriptions) {
-                subscriptionStatusMap.put(subscription.getShuttleId(), subscription.getStatus());
+                Map<String, Object> details = new HashMap<>();
+                details.put("subscriptionId", subscription.getId()); // Subscription ID
+                details.put("status", subscription.getStatus());     // Subscription Status
+                subscriptionStatusMap.put(subscription.getShuttleId(), details);
             }
 
             // Iterate over shuttles and set the status for each
             for (Shuttle shuttle : shuttles) {
-                // Check if the shuttle has a subscription
-                String status = subscriptionStatusMap.get(shuttle.getId());
+                Map<String, Object> subscriptionDetails = subscriptionStatusMap.get(shuttle.getId());
 
-                // If the user is subscribed to this shuttle, mark it
-                if (status != null) {
-                    shuttle.setStatus(status); // Assuming Shuttle has a setStatus method
-                    shuttle.setIsSubscribed(true); // Mark this shuttle as subscribed
+                if (subscriptionDetails != null) {
+                    // If the user is subscribed to this shuttle, set the status
+                    String status = (String) subscriptionDetails.get("status");
+                    int subscriptionId = (int) subscriptionDetails.get("subscriptionId");
+                    shuttle.setStatus(status);
+                    shuttle.setIsSubscribed(true);
+                    shuttle.setSubscriptionId(subscriptionId);
                 } else {
-                    shuttle.setStatus("Subscribe"); // Default status
-                    shuttle.setIsSubscribed(false); // Mark this shuttle as not subscribed
+                    // Default values for non-subscribed shuttles
+                    shuttle.setStatus("canceled");
+                    shuttle.setIsSubscribed(false);
                 }
             }
 
             // Pass the updated shuttles to the JSP
+            System.out.println("shuttles : " + shuttles);
             request.setAttribute("shuttles", shuttles);
             request.getRequestDispatcher("/subscriptions/list.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "Unable to fetch shuttles. Please try again later.");
             request.getRequestDispatcher("/vues/dashboard.jsp").forward(request, response);
         }
+
 
     }
 }

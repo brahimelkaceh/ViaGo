@@ -15,7 +15,7 @@ public class SubscriptionService {
     }
 
     public List<Subscription> getSubscriptionsByUserId(int userId) {
-        try{
+        try {
             return subscriptionDAO.getSubscriptionsByUserId(userId);
         } catch (Exception e) {
             System.out.println("Error while getting subscriptions by user id: " + e.getMessage());
@@ -31,4 +31,12 @@ public class SubscriptionService {
         }
     }
 
+
+    public void updateSubscription(Subscription subscriptionUpdate) {
+        try {
+            subscriptionDAO.updateSubscriptionStatus(subscriptionUpdate);
+        } catch (Exception e) {
+            System.out.println("Error updating subscription: " + e.getMessage());
+        }
+    }
 }

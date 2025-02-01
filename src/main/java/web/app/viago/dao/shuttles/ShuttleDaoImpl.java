@@ -126,6 +126,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
                 shuttle.setArrivalTime(resultSet.getString("arrival_time"));
                 shuttle.setBusDescription(resultSet.getString("bus_description"));
                 shuttle.setMaxSubscribers(resultSet.getInt("max_subscribers"));
+                shuttle.setNumSubscribers(resultSet.getInt("num_subscribers"));
                 shuttle.setCreatedAt(resultSet.getTimestamp("created_at"));
 
                 // Add the shuttle to the list

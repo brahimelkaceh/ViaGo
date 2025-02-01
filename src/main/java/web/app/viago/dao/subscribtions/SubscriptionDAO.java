@@ -9,8 +9,10 @@ public interface SubscriptionDAO {
     void createSubscribe(Subscription subscribe);
 
     List<Subscription> getAllSubscriptions();
+
     List<Subscription> getSubscriptionsByUserId(int userId);
+
     Subscription getSubscriptionById(int id);
 
-    String updateSubscriptionStatus(int id, String status);
+    void updateSubscriptionStatus(Subscription subscribe);
 }

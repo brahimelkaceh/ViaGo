@@ -1,4 +1,4 @@
-<%@ page import="web.app.viago.model.User" %>
+<%@ page import="web.app.viago.model.Company" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
@@ -16,11 +16,11 @@
     </div>
 
     <%
-        User user = (User) session.getAttribute("user");
-        if (user != null) {
+        Company company = (Company) session.getAttribute("company");
+        if (company != null) {
     %>
     <div class="ms-auto text-white d-flex flex-row align-items-center">
-        <p>Hello, <%= user.getName() %>!</p>
+        <p>Hello, <%= company.getName() %>!</p>
         <a href="logout" class="btn btn-outline-light">Logout</a>
     </div>
     <%

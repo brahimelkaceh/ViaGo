@@ -13,13 +13,15 @@ public class UserService {
         this.userDao = new UserDaoImpl();
     }
 
-    public void createUser(User user) {
+    public boolean createUser(User user) {
         try {
-            userDao.create(user);
+            return userDao.create(user);
         } catch (Exception e) {
             System.out.println("Error creating user: " + e.getMessage());
+            return false;
         }
     }
+
 
     public User getUserById(int id) {
         try {

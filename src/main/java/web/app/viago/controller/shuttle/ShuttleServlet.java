@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import web.app.viago.model.Company;
 import web.app.viago.model.Shuttle;
 import web.app.viago.model.User;
 import web.app.viago.services.ShuttleService;
@@ -33,9 +34,9 @@ public class ShuttleServlet extends HttpServlet {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
 
-        User loggedInUser = (User) session.getAttribute("user");
+        Company loggedInCompany = (Company) session.getAttribute("company");
 
-        if (loggedInUser == null) {
+        if (loggedInCompany == null) {
             response.sendRedirect("login.jsp");
             return;
         }
@@ -88,8 +89,8 @@ public class ShuttleServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         HttpSession session = request.getSession();
-        User loggedInUser = (User) session.getAttribute("user");
-        if (loggedInUser == null) {
+        Company loggedInCompany = (Company) session.getAttribute("company");
+        if (loggedInCompany == null) {
             response.sendRedirect("login.jsp");
         }
         if (action != null) {
@@ -107,8 +108,8 @@ public class ShuttleServlet extends HttpServlet {
                         //            // Create a Shuttle object
                         Shuttle shuttle = new Shuttle();
                         shuttle.setDepartureCity(departureCity);
-                        assert loggedInUser != null;
-                        shuttle.setShuttleOwner(loggedInUser.getName());
+                        assert loggedInCompany != null;
+                        shuttle.setShuttleOwner(loggedInCompany.getName());
                         shuttle.setArrivalCity(arrivalCity);
                         shuttle.setStartDate(startDate);
                         shuttle.setEndDate(endDate);
@@ -120,7 +121,7 @@ public class ShuttleServlet extends HttpServlet {
                         shuttle.setCreatedAt(new java.util.Date());
 
                         // Call the DAO to persist the shuttle
-                        shuttleService.createShuttle(shuttle, loggedInUser.getId());
+                        shuttleService.createShuttle(shuttle, loggedInCompany.getId());
 
                         // Redirect to the shuttle list page after adding the shuttle
                         response.sendRedirect("/shuttles?action=list");
@@ -155,7 +156,7 @@ public class ShuttleServlet extends HttpServlet {
                         shuttle.setCreatedAt(new java.util.Date());
 
                         // Call the DAO to persist the shuttle
-                        assert loggedInUser != null;
+                        assert loggedInCompany != null;
                         shuttleService.updateShuttle(shuttle);
 
                         // Redirect to the shuttle list page after adding the shuttle

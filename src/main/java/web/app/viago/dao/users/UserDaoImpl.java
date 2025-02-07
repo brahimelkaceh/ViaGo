@@ -22,7 +22,7 @@ public class UserDaoImpl implements UserDAO {
     }
 
     public boolean register(User user) {
-        String checkQuery = "SELECT COUNT(*) FROM users WHERE email = ?";
+        String checkQuery = "SELECT (SELECT COUNT(*) FROM users WHERE email = ?) (SELECT COUNT(*) FROM company WHERE email = ?) AS total_count;";
         String insertQuery = "INSERT INTO users (name, email, password, role, phone_number) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement checkStatement = null;
         PreparedStatement insertStatement = null;
@@ -33,6 +33,7 @@ public class UserDaoImpl implements UserDAO {
             // Check if email already exists
             checkStatement = connection.prepareStatement(checkQuery);
             checkStatement.setString(1, user.getEmail());
+            checkStatement.setString(2, user.getEmail());
             ResultSet rs = checkStatement.executeQuery();
             if (rs.next() && rs.getInt(1) > 0) {
                 System.out.println("Email already exists: " + user.getEmail());
@@ -108,11 +109,25 @@ public class UserDaoImpl implements UserDAO {
 
 
     @Override
-    public void create(User user) {
+    public boolean create(User user) {
+        String checkQuery = "SELECT " +
+                "((SELECT COUNT(*) FROM users WHERE email = ?) + " +
+                "(SELECT COUNT(*) FROM company WHERE email = ?)) AS total_count";
+        String query = "INSERT INTO users (name, email, password, role, phone_number) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement statement = null;
+        PreparedStatement checkStatement = null;
+
         try {
             connection = DbConnection.getInstance().getConnection();
-            String query = "INSERT INTO users (name, email, password, role, phone_number) VALUES (?, ?, ?, ?, ?)";
+            // Check if email already exists
+            checkStatement = connection.prepareStatement(checkQuery);
+            checkStatement.setString(1, user.getEmail());
+            checkStatement.setString(2, user.getEmail());
+            ResultSet rs = checkStatement.executeQuery();
+            if (rs.next() && rs.getInt(1) > 0) {
+                System.out.println("Email already exists: " + user.getEmail());
+                return false; // Email already exists
+            }
             statement = connection.prepareStatement(query);
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
@@ -120,8 +135,11 @@ public class UserDaoImpl implements UserDAO {
             statement.setString(4, user.getRole());
             statement.setString(5, user.getPhoneNumber());
             statement.executeUpdate();
+            System.out.println("User registered successfully.");
+            return true;
         } catch (SQLException e) {
             System.err.println("Error creating user: " + e.getMessage());
+            return false;
         } finally {
             try {
                 if (statement != null) statement.close();

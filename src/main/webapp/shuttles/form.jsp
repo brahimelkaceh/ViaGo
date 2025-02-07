@@ -57,9 +57,7 @@
         <div class="mb-3">
             <label for="maxSubscribers" class="form-label">Max Subscribers</label>
             <input type="number" class="form-control" id="maxSubscribers" name="maxSubscribers"
-                   value="${updateShuttle != null ?  updateShuttle.maxSubscribers : ''}"
-
-                   required>
+                   value="${updateShuttle != null ?  updateShuttle.maxSubscribers : ''}" required>
         </div>
         <button type="submit"
                 class="btn btn-primary">${param.action == 'update' ? 'Update Shuttle' : 'Add New Shuttle'}</button>

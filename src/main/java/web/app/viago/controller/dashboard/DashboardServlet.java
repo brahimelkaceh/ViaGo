@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import web.app.viago.model.Company;
 import web.app.viago.model.Shuttle;
 import web.app.viago.model.User;
 import web.app.viago.services.UserService;
@@ -22,13 +23,10 @@ public class DashboardServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println(request.getServletPath());
-        System.out.println("Get Method");
-
         HttpSession session = request.getSession();
-        User loggedInUser = (User) session.getAttribute("user");
+        Company company = (Company) session.getAttribute("company");
 
-        if (loggedInUser == null) {
+        if (company == null) {
             response.sendRedirect("login.jsp");
             return;
         }

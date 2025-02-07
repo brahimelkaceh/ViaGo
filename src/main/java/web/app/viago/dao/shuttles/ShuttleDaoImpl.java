@@ -30,7 +30,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
         PreparedStatement statement = null;
         try {
             connection = DbConnection.getInstance().getConnection();
-            String query = "INSERT INTO shuttleservices (user_id, user_name, departure_city, arrival_city, start_date, end_date, " +
+            String query = "INSERT INTO shuttleservices (company_id, company_name, departure_city, arrival_city, start_date, end_date, " +
                     "departure_time, arrival_time, bus_description, max_subscribers, num_subscribers, created_at) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -68,7 +68,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
             if (rs.next()) {
                 return new Shuttle(
                         rs.getInt("id"),
-                        rs.getInt("user_id"),
+                        rs.getInt("company_id"),
                         rs.getString("departure_city"),
                         rs.getString("arrival_city"),
                         rs.getDate("start_date"),
@@ -78,7 +78,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
                         rs.getString("bus_description"),
                         rs.getInt("max_subscribers"),
                         rs.getInt("num_subscribers"),
-                        rs.getString("user_name"),
+                        rs.getString("company_name"),
                         rs.getTimestamp("created_at")
                 );
             } else {
@@ -121,7 +121,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
 
                 // Map each column in the database to the Shuttle object
                 shuttle.setId(resultSet.getInt("id"));
-                shuttle.setUserId(resultSet.getInt("user_id"));
+                shuttle.setUserId(resultSet.getInt("company_id"));
                 shuttle.setDepartureCity(resultSet.getString("departure_city"));
                 shuttle.setArrivalCity(resultSet.getString("arrival_city"));
                 shuttle.setStartDate(resultSet.getDate("start_date"));
@@ -131,7 +131,7 @@ public class ShuttleDaoImpl implements ShuttleDAO {
                 shuttle.setBusDescription(resultSet.getString("bus_description"));
                 shuttle.setMaxSubscribers(resultSet.getInt("max_subscribers"));
                 shuttle.setNumSubscribers(resultSet.getInt("num_subscribers"));
-                shuttle.setShuttleOwner(resultSet.getString("user_name"));
+                shuttle.setShuttleOwner(resultSet.getString("company_name"));
                 shuttle.setCreatedAt(resultSet.getTimestamp("created_at"));
 
                 // Add the shuttle to the list

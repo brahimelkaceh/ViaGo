@@ -3,7 +3,6 @@ package web.app.viago.dao.shuttles;
 import web.app.viago.model.Shuttle;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ShuttleDAO {
 
@@ -15,7 +14,7 @@ public interface ShuttleDAO {
 
     // Get all shuttles
     List<Shuttle> getAllShuttles();
-    
+
     // Update an existing shuttle
     void update(Shuttle shuttle);
 

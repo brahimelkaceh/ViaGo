@@ -11,7 +11,7 @@ public interface UserDAO {
      *
      * @param user the user to create
      */
-    void create(User user);
+    boolean create(User user);
 
 
     /**

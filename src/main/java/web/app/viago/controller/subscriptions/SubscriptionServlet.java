@@ -6,9 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import web.app.viago.model.Company;
 import web.app.viago.model.Shuttle;
 import web.app.viago.model.Subscription;
 import web.app.viago.model.User;
+import web.app.viago.services.CompanyService;
 import web.app.viago.services.ShuttleService;
 import web.app.viago.services.SubscriptionService;
 import web.app.viago.services.UserService;
@@ -24,12 +26,15 @@ public class SubscriptionServlet extends HttpServlet {
     private final ShuttleService shuttleService;
     private final SubscriptionService subscriptionService;
     private final UserService userService;
+    private final CompanyService companyService;
 
     // ✅ Constructor Injection (Best Practice)
     public SubscriptionServlet() {
         this.shuttleService = new ShuttleService();
         this.subscriptionService = new SubscriptionService();
         this.userService = new UserService();  // Initialize properly
+        this.companyService = new CompanyService();
+
     }
 
     @Override
@@ -46,11 +51,10 @@ public class SubscriptionServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         int shuttleId = Integer.parseInt(request.getParameter("id"));
-        int userId = loggedInUser.getId();
+        int companyId = Integer.parseInt(request.getParameter("company_id"));
         String status = request.getParameter("status");
         if ("canceled".equals(action)) {
-            Subscription existSubscription = subscriptionService.getSubscriptionByUserIdAndShuttleId(userId, shuttleId);
-
+            Subscription existSubscription = subscriptionService.getSubscriptionByUserIdAndShuttleId(loggedInUser.getId(), shuttleId);
             try {
                 if (existSubscription != null) {
                     int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
@@ -60,7 +64,7 @@ public class SubscriptionServlet extends HttpServlet {
                     System.out.println("Creating a new subscription...");
                     Subscription subscription = new Subscription();
                     subscription.setShuttleId(shuttleId);
-                    subscription.setUserId(userId);
+                    subscription.setUserId(loggedInUser.getId());
                     subscription.setStatus("subscribed");
                     subscription.setCreatedAt(new java.util.Date());
                     subscriptionService.createSubscription(subscription); // Create new subscription
@@ -112,7 +116,7 @@ public class SubscriptionServlet extends HttpServlet {
                 Map<String, Object> subscriptionDetails = subscriptionStatusMap.get(shuttle.getId());
 
                 // ✅ Ensure userService is initialized before calling it
-                User owner = userService.getUserById(shuttle.getUserId());
+                Company owner = companyService.getCompanyById(shuttle.getUserId());
 
                 if (subscriptionDetails != null) {
                     String status = (String) subscriptionDetails.get("status");
@@ -127,7 +131,6 @@ public class SubscriptionServlet extends HttpServlet {
                     shuttle.setIsSubscribed(false);
                 }
             }
-            System.out.println("shuttles : " + shuttles);
             request.setAttribute("shuttles", shuttles);
             request.getRequestDispatcher("/subscriptions/list.jsp").forward(request, response);
         } catch (Exception e) {

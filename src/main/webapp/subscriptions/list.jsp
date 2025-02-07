@@ -35,7 +35,7 @@
 <!-- Main Content -->
 <div class="container py-4">
     <h1 class="text-center mb-4">Browse Subscriptions</h1>
-    <a href="/requests/form.jsp?action=create" class="btn btn-success mb-3">Add New Request</a>
+    <a href="/requests" class="btn btn-success mb-3">Add New Request</a>
 
     <!-- Subscription List -->
     <div class="row">
@@ -65,6 +65,7 @@
                             </span>
                             <form action="/subscriptions" method="POST" class="d-inline">
                                 <input type="hidden" name="action" value="${shuttle.status}">
+                                <input type="hidden" name="company_id" value="${shuttle.userId}">
                                 <input type="hidden" name="id" value="${shuttle.id}">
                                 <input type="hidden" name="subscriptionId" value="${shuttle.subscriptionId}">
                                 <input type="hidden" name="status" value="${shuttle.status}">

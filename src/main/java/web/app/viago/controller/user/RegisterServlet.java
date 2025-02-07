@@ -7,15 +7,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import web.app.viago.dao.users.UserDAO;
 import web.app.viago.dao.users.UserDaoImpl;
+import web.app.viago.model.Company;
 import web.app.viago.model.User;
-
+import web.app.viago.services.CompanyService;
+import web.app.viago.services.UserService;
 
 import java.io.IOException;
 
-@WebServlet("/vues/RegisterServlet")  // Correct the mapping here if needed
+@WebServlet("/vues/RegisterServlet")  // Ensure correct servlet mapping
 public class RegisterServlet extends HttpServlet {
 
     private UserDAO userDao;
+    private final CompanyService companyService;
+    private final UserService userService;
+
+    public RegisterServlet() {
+        this.companyService = new CompanyService(); // Fixed capitalization issue
+        this.userService = new UserService();
+    }
 
     @Override
     public void init() {
@@ -30,32 +39,62 @@ public class RegisterServlet extends HttpServlet {
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
 
-        // Check if passwords match
+        // Validate passwords match
         if (!password.equals(confirmPassword)) {
             request.setAttribute("errorMessage", "Passwords do not match.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // Check if email already exists
-        User existingUser = userDao.findByEmail(email);
-        if (existingUser != null) {
+        // Check if email is already in use
+        if (userDao.findByEmail(email) != null) {
             request.setAttribute("errorMessage", "Email already exists.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
         }
 
-        // Create new user
+        // Handle role-based registration
+        if ("user".equalsIgnoreCase(role)) {
+            registerUser(name, email, password);
+        } else if ("company".equalsIgnoreCase(role)) {
+            registerCompany(name, email, password);
+        } else {
+            request.setAttribute("errorMessage", "Invalid role selected.");
+            request.getRequestDispatcher("register.jsp").forward(request, response);
+            return;
+        }
+
+        // Redirect to login after successful registration
+        response.sendRedirect("login.jsp");
+    }
+
+    private void registerUser(String name, String email, String password) {
         User user = new User();
         user.setName(name);
         user.setEmail(email);
-        user.setRole(role);
-        user.setPassword(password); // Store hashed password in production
+        user.setRole("user");
+        user.setPassword(password); // Hash password before saving in production
         user.setPhoneNumber("************");
-        userDao.create(user);
+        boolean isCreated = userService.createUser(user);
+        if (isCreated) {
+            System.out.println("user created successfully.");
+        } else {
+            System.out.println("Failed to create user.");
+        }
+    }
 
+    private void registerCompany(String name, String email, String password) {
+        Company company = new Company();
+        company.setName(name);
+        company.setEmail(email);
+        company.setPassword(password); // Hash password before saving in production
+        company.setPhoneNumber("************");
+        boolean isCreated = companyService.createCompany(company);
 
-        // Redirect to login page after successful registration
-        response.sendRedirect("login.jsp");
+        if (isCreated) {
+            System.out.println("Company created successfully.");
+        } else {
+            System.out.println("Failed to create company.");
+        }
     }
 }

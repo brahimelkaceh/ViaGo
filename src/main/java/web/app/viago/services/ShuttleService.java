@@ -66,6 +66,21 @@ public class ShuttleService {
         return null;
     }
 
+    // Get a list of all shuttles
+    public List<Shuttle> getAllShuttlesByCompanyId(int companyId) {
+        try {
+            List<Shuttle> shuttles = shuttleDao.getAllShuttlesByCompanyId(companyId);
+            if (shuttles != null) {
+                return shuttles;
+            } else {
+                System.out.println("No shuttles found.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error retrieving all shuttles: " + e.getMessage());
+        }
+        return null;
+    }
+
     // Get shuttles by city or other criteria if needed
     public List<Shuttle> getShuttlesByCity(String city) {
         try {

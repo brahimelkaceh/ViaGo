@@ -4,6 +4,8 @@
     <option name="state">
       <map>
         <entry key="file://$PROJECT_DIR$/src/main/webapp/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/subscriptions/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/subscriptions" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/users/form.jsp" value="file://$PROJECT_DIR$/src/main/webapp/users" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/vues/index.jsp" value="file://$PROJECT_DIR$/src/main/webapp/vues" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/vues/manage-shuttles.jsp" value="file://$PROJECT_DIR$/src/main/webapp/vues" />
       </map>

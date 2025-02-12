@@ -10,32 +10,56 @@
     <title>Browse Subscriptions</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-dark text-white">
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
-    <a class="navbar-brand" href="/">ViaGo</a>
-    <div class="ms-auto d-flex align-items-center">
-        <%
-            User user = (User) session.getAttribute("user");
-            if (user != null) {
-        %>
-        <span class="text-white me-3">Hello, <%= user.getName() %>!</span>
-        <a href="logout" class="btn btn-outline-light">Logout</a>
-        <%
-        } else {
-        %>
-        <span class="text-white me-3">You are not logged in.</span>
-        <a href="login.jsp" class="btn btn-outline-light">Login</a>
-        <%
-            }
-        %>
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/index">ViaGo</a>
+        <div class="ms-auto d-flex align-items-center">
+            <%
+                User user = (User) session.getAttribute("user");
+                if (user != null) {
+            %>
+            <div class="ms-auto text-white d-flex flex-row align-items-center">
+                <span class="text-white me-3">Hello, <%= user.getName() %>!</span>
+                <a href="logout" class="btn btn-outline-light">Logout</a>
+            </div>
+            <%
+            } else {
+            %>
+            <span class="text-white me-3">You are not logged in.</span>
+            <a href="login.jsp" class="btn btn-outline-light">Login</a>
+            <%
+                }
+            %>
+        </div>
     </div>
 </nav>
 
 <!-- Main Content -->
 <div class="container py-4">
-    <h1 class="text-center mb-4">Browse Subscriptions</h1>
-    <a href="/requests" class="btn btn-success mb-3">Add New Request</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="/index" class="btn btn-outline-info">⬅️ Back to Home</a>
+        <h2 class="text-center">Browse Subscriptions</h2>
+        <a class="btn btn-danger mb-3" href="/requests?action=list">Managae Requests</a>
+    </div>
+
+    <!-- Search Bar -->
+    <form method="GET" action="subscriptions.jsp" class="mb-4">
+        <div class="row">
+            <div class="col-md-5">
+                <input type="text" name="departureCity" class="form-control" placeholder="Departure City"
+                       value="${param.departureCity}">
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="arrivalCity" class="form-control" placeholder="Arrival City"
+                       value="${param.arrivalCity}">
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+        </div>
+    </form>
 
     <!-- Subscription List -->
     <div class="row">

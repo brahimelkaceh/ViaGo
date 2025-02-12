@@ -31,6 +31,31 @@ public class Request {
         this.createdAt = createdAt;
     }
 
+
+    public Request(int id, int companyId, String departureCity, String arrivalCity, java.sql.Date departureStartDate, java.sql.Date arrivalEndDate, int subscribersCount) {
+        this.id = id;
+        this.company_id = companyId;
+        this.departure_city = departureCity;
+        this.arrival_city = arrivalCity;
+        this.departure_start_date = departureStartDate;
+        this.arrival_end_date = arrivalEndDate;
+        this.subscribers_count = subscribersCount;
+
+
+    }
+
+    public Request(int id, int companyId, String departureCity, String arrivalCity, java.sql.Date requestedStartDate, java.sql.Date requestedEndDate, String status, int subscribersCount) {
+        this.id = id;
+        this.company_id = companyId;
+        this.departure_city = departureCity;
+        this.arrival_city = arrivalCity;
+        this.departure_start_date = requestedStartDate;
+        this.arrival_end_date = requestedEndDate;
+        this.subscribers_count = subscribersCount;
+        this.status = status;
+    }
+
+
     public int getId() {
         return id;
     }

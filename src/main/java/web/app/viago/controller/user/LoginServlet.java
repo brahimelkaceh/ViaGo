@@ -54,8 +54,6 @@ public class LoginServlet extends HttpServlet {
             // Create session for company
             HttpSession session = request.getSession();
             session.setAttribute("company", company);
-            System.out.println("Company found: " + company);
-
             // Redirect company users
             response.sendRedirect("/dashboard");
             return;

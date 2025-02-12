@@ -1,4 +1,9 @@
-<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page import="web.app.viago.model.Company" %>
+<%@ page import="web.app.viago.model.User" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,37 +29,47 @@
 <body>
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="#">Viago</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link active" href="#">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="vues/login.jsp">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="vues/register.jsp">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="vues/subscriptions.jsp">Subscriptions</a>
-                </li>
-            </ul>
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/index">ViaGo</a>
+
+        <%
+            User user = (User) session.getAttribute("user");
+            Company company = (Company) session.getAttribute("company");
+            if (user != null) {
+        %>
+        <div class="ms-auto text-white d-flex flex-row align-items-center">
+            <span class="text-white me-3">Hello, <%= user.getName() %>!</span>
+            <a href="logout" class="btn btn-outline-light">Logout</a>
         </div>
+        <%
+        } else if (company != null) {
+        %>
+        <div class="ms-auto text-white d-flex flex-row align-items-center">
+            <a href="/dashboard" class="btn btn-sm btn-outline-info"> Dashboard</a>
+            <span class="text-white mx-3">Hello, <%= company.getName() %>!</span>
+            <a href="logout" class="btn btn-outline-light">Logout</a>
+        </div>
+        <%
+        } else {
+        %>
+        <div class="ms-auto text-white d-flex flex-row align-items-center">
+            <a href="vues/login.jsp" class="btn btn-outline-light me-3">Login</a>
+            <a href="vues/register.jsp" class="btn btn-outline-light">Register</a>
+        </div>
+
+        <%
+            }
+        %>
+
     </div>
 </nav>
-
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="container">
         <h1>Welcome to Viago</h1>
         <p>Your one-stop solution for managing shuttle subscriptions and travel requests.</p>
         <a href="subscriptions" class="btn btn-primary btn-lg">Explore Subscriptions</a>
-        <a href="register.jsp" class="btn btn-outline-light btn-lg">Register Now</a>
+        <a class="btn btn-outline-light btn-lg" href="vues/register.jsp">Register</a>
     </div>
 </section>
 
@@ -66,6 +81,7 @@
             <div class="col-md-6">
                 <i class="feature-icon bi bi-person"></i>
                 <h5 class="mt-3">For Users</h5>
+
                 <p>Search, subscribe, and manage your shuttle services with ease.</p>
             </div>
             <div class="col-md-6">
@@ -80,19 +96,31 @@
 <!-- Featured Subscriptions Section -->
 <section class="bg-light py-5">
     <div class="container">
-        <h2 class="text-center mb-4">Featured Subscriptions</h2>
+        <h2 class="text-center mb-4">Peer-Recommended shuttles</h2>
         <div class="row">
             <!-- Dynamic content can go here -->
-            <div class="col-md-4">
-                <div class="card">
-                    <img src="https://via.placeholder.com/350x200" class="card-img-top" alt="Subscription">
-                    <div class="card-body">
-                        <h5 class="card-title">City A to City B</h5>
-                        <p class="card-text">10 spots available. Book now!</p>
-                        <a href="#" class="btn btn-primary">View Details</a>
+            <c:forEach var="request" items="${requests}">
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h5 class="card-title m-0">${request.departure_city} ➝ ${request.arrival_city}</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>🗓️ Start
+                                    Date:</strong> ${request.departure_start_date}
+                                </li>
+                                <li class="list-group-item"><strong>📅 End Date:</strong> ${request.arrival_end_date}
+                                </li>
+                                <li class="list-group-item"><strong>👥 Max
+                                    Passengers:</strong> ${request.subscribers_count}
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </c:forEach>
+
             <!-- Add more cards dynamically -->
         </div>
     </div>

@@ -32,6 +32,7 @@ public class ShuttleServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
+
         HttpSession session = request.getSession();
 
         Company loggedInCompany = (Company) session.getAttribute("company");
@@ -68,17 +69,20 @@ public class ShuttleServlet extends HttpServlet {
                     break;
 
                 case "create":
+                    System.out.println("🔍 Action from request: " + action);
+
                     request.getRequestDispatcher("/shuttles/form.jsp").forward(request, response);  // Forward to empty form for new user
                     break;
 
                 default:
-                    List<Shuttle> defaultUsers = shuttleService.getAllShuttles();
-                    request.setAttribute("shuttles", defaultUsers);
+                    List<Shuttle> defaultShuttles = shuttleService.getAllShuttlesByCompanyId(loggedInCompany.getId());
+                    request.setAttribute("shuttles", defaultShuttles);
                     request.getRequestDispatcher("/shuttles/list.jsp").forward(request, response);
                     break;
             }
         } else {
-            List<Shuttle> shuttles = shuttleService.getAllShuttles();
+            List<Shuttle> shuttles = shuttleService.getAllShuttlesByCompanyId(loggedInCompany.getId());
+
             request.setAttribute("shuttles", shuttles);
             request.getRequestDispatcher("/shuttles/list.jsp").forward(request, response);
         }

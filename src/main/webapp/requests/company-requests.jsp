@@ -1,6 +1,5 @@
 <%--<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>--%>
 <%@ page import="web.app.viago.model.Company" %>
-
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
@@ -34,57 +33,73 @@
     </div>
 
 </nav>
-
 <div class="container my-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="/dashboard" class="btn btn-outline-info">⬅️ Back to Dashboard</a>
-        <h2 class="text-center flex-grow-1">Shuttle List</h2>
-        <a href="/shuttles/form.jsp?action=create" class="btn btn-success">Add New Shuttle</a>
+        <h2 class="text-center flex-grow-1">Requests List</h2>
     </div>
-    <div class="card shadow p-3">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark text-center">
+
+    <div class="card shadow-lg border-0">
+        <div class="card shadow p-3">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
                 <tr>
                     <th>ID</th>
+                    <th>User</th>
                     <th>Departure City</th>
                     <th>Arrival City</th>
                     <th>Start Date</th>
                     <th>End Date</th>
-                    <th>Departure Time</th>
-                    <th>Arrival Time</th>
-                    <th>Bus Description</th>
                     <th>Max Subscribers</th>
+                    <th>Status</th>
                     <th>Actions</th>
-
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Example shuttle row, dynamically populate this with backend data -->
-                <c:forEach var="shuttle" items="${shuttles}">
+                <c:forEach var="request" items="${requests}">
                     <tr>
-                        <td>${shuttle.id}</td>
-                        <td>${shuttle.departureCity}</td>
-                        <td>${shuttle.arrivalCity}</td>
-                        <td>${shuttle.startDate}</td>
-                        <td>${shuttle.endDate}</td>
-                        <td>${shuttle.departureTime}</td>
-                        <td>${shuttle.arrivalTime}</td>
-                        <td>${shuttle.busDescription}</td>
-                        <td>${shuttle.maxSubscribers}</td>
-                        <td class="d-flex justify-content-between">
-
-
-                            <a href="/shuttles?action=update&id=${shuttle.id}" class="btn btn-warning btn-sm">Edit</a>
-
-                            <form id="deleteForm" action="/shuttles" method="POST" style="display:none;">
-                                <input type="hidden" name="action" value="delete">
-                                <input type="hidden" name="id" value="${shuttle.id}">
+                        <td>${request.id}</td>
+                        <td>${request.user_id}</td>
+                        <td>${request.departure_city}</td>
+                        <td>${request.arrival_city}</td>
+                        <td>${request.departure_start_date}</td>
+                        <td>${request.arrival_end_date}</td>
+                        <td>${request.subscribers_count}</td>
+                        <td>
+                            <form action="/requests" method="post" class="d-flex align-items-center">
+                                <input type="hidden" name="action" value="statusChanged">
+                                <input type="hidden" name="id" value="${request.id}">
+                                <select name="status" class="form-select status-select text-capitalize"
+                                        data-request-id="${request.id}">
+                                    <option class="bg-warning text-dark" value="pending"
+                                        ${request.status == 'pending' ? 'selected' : ''}>
+                                        Pending
+                                    </option>
+                                    <option class="bg-success text-white" value="ok"
+                                        ${request.status == 'ok' ? 'selected' : ''}>
+                                        Approved
+                                    </option>
+                                    <option class="bg-danger text-white" value="cancel"
+                                        ${request.status == 'cancel' ? 'selected' : ''}>
+                                        Canceled
+                                    </option>
+                                </select>
+                                <button type="submit" class="btn btn-dark btn-sm ms-1">
+                                    🔃
+                                </button>
                             </form>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                    data-bs-target="#confirmDeleteModal" onclick="setDeleteId(${shuttle.id})">
-                                Delete
-                            </button>
+                        </td>
+                        <td>
+                            <div class="btn-group">
+                                <a href="/requests?action=update&id=${request.id}" class="btn btn-warning btn-sm">
+                                    🖋️Edit
+                                </a>
+                                <button type="button" class="btn btn-light border-danger text-danger btn-sm ms-2"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#confirmDeleteModal" onclick="setDeleteId(${request.id})">
+                                    ❌ Delete
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </c:forEach>
@@ -92,6 +107,7 @@
             </table>
         </div>
     </div>
+
 </div>
 
 <!-- Modal HTML Structure -->
@@ -104,7 +120,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <p class="mb-2 text-danger">Are you sure you want to delete this shuttle?</p>
+                <p class="mb-2 text-danger">Are you sure you want to delete this request?</p>
                 <p class="text-danger fw-bold">This action cannot be undone.</p>
             </div>
             <div class="modal-footer justify-content-center">
@@ -117,18 +133,18 @@
 
 <script>
     // Store the ID of the user to be deleted
-    let userIdToDelete = null;
+    let IdToDelete = null;
 
     // Set the user ID in the modal when the Delete button is clicked
     function setDeleteId(userId) {
-        userIdToDelete = userId;
+        IdToDelete = userId;
     }
 
     // When the user clicks the "Confirm Delete" button in the modal
     document.getElementById('confirmDeleteBtn').addEventListener('click', function () {
-        if (userIdToDelete !== null) {
+        if (IdToDelete !== null) {
             // Set the ID of the user to be deleted in the form
-            document.querySelector('#deleteForm input[name="id"]').value = userIdToDelete;
+            document.querySelector('#deleteForm input[name="id"]').value = IdToDelete;
             // Submit the form to delete the user
             document.getElementById('deleteForm').submit();
         }

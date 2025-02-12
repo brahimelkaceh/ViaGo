@@ -13,6 +13,7 @@ public class CompanyService {
         this.companyDAO = new CompanyDaoImpl();
     }
 
+
     public boolean createCompany(Company company) {
         try {
             return companyDAO.create(company);

@@ -156,6 +156,63 @@ public class ShuttleDaoImpl implements ShuttleDAO {
 
 
     @Override
+    public List<Shuttle> getAllShuttlesByCompanyId(int companyId) {
+        List<Shuttle> shuttles = new ArrayList<>();
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            // SQL query to fetch all shuttle services
+            String query = "SELECT * FROM shuttleservices WHERE company_id = ?";
+
+
+            // Get the database connection
+            Connection connection = DbConnection.getInstance().getConnection();
+
+            // Prepare and execute the SQL statement
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, companyId);
+            resultSet = statement.executeQuery();
+
+            // Process the result set
+            while (resultSet.next()) {
+                Shuttle shuttle = new Shuttle();
+
+                // Map each column in the database to the Shuttle object
+                shuttle.setId(resultSet.getInt("id"));
+                shuttle.setUserId(resultSet.getInt("company_id"));
+                shuttle.setDepartureCity(resultSet.getString("departure_city"));
+                shuttle.setArrivalCity(resultSet.getString("arrival_city"));
+                shuttle.setStartDate(resultSet.getDate("start_date"));
+                shuttle.setEndDate(resultSet.getDate("end_date"));
+                shuttle.setDepartureTime(resultSet.getString("departure_time"));
+                shuttle.setArrivalTime(resultSet.getString("arrival_time"));
+                shuttle.setBusDescription(resultSet.getString("bus_description"));
+                shuttle.setMaxSubscribers(resultSet.getInt("max_subscribers"));
+                shuttle.setNumSubscribers(resultSet.getInt("num_subscribers"));
+                shuttle.setShuttleOwner(resultSet.getString("company_name"));
+                shuttle.setCreatedAt(resultSet.getTimestamp("created_at"));
+
+                // Add the shuttle to the list
+                shuttles.add(shuttle);
+            }
+        } catch (SQLException e) {
+            // Handle SQL exceptions
+            System.out.println("Error getting all shuttles: " + e.getMessage());
+            throw new RuntimeException("Error while fetching shuttles: " + e.getMessage());
+        } finally {
+            // Close resources to avoid memory leaks
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+            } catch (SQLException e) {
+                System.out.println("Error while closing statement: " + e.getMessage());
+            }
+        }
+
+        return shuttles;
+    }
+
+    @Override
     public void update(Shuttle shuttle) {
         PreparedStatement statement = null;
         try {

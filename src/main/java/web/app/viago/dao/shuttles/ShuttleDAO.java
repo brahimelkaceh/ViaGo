@@ -15,6 +15,8 @@ public interface ShuttleDAO {
     // Get all shuttles
     List<Shuttle> getAllShuttles();
 
+    List<Shuttle> getAllShuttlesByCompanyId(int companyId);
+
     // Update an existing shuttle
     void update(Shuttle shuttle);
 

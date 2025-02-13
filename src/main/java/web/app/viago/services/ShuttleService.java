@@ -82,9 +82,9 @@ public class ShuttleService {
     }
 
     // Get shuttles by city or other criteria if needed
-    public List<Shuttle> getShuttlesByCity(String city) {
+    public List<Shuttle> search(String departureCity, String arrivalCity) {
         try {
-            return shuttleDao.findByCity(city);
+            return shuttleDao.search(departureCity, arrivalCity);
         } catch (Exception e) {
             System.out.println("Error retrieving shuttles by city: " + e.getMessage());
         }

@@ -16,26 +16,15 @@ import web.app.viago.services.SubscriptionService;
 import web.app.viago.services.UserService;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @WebServlet(name = "subscriptionServlet", urlPatterns = "/subscriptions")
 public class SubscriptionServlet extends HttpServlet {
 
-    private final ShuttleService shuttleService;
-    private final SubscriptionService subscriptionService;
-    private final UserService userService;
-    private final CompanyService companyService;
-
-    // ✅ Constructor Injection (Best Practice)
-    public SubscriptionServlet() {
-        this.shuttleService = new ShuttleService();
-        this.subscriptionService = new SubscriptionService();
-        this.userService = new UserService();  // Initialize properly
-        this.companyService = new CompanyService();
-
-    }
+    private final ShuttleService shuttleService = new ShuttleService();
+    private final SubscriptionService subscriptionService = new SubscriptionService();
+    private final UserService userService = new UserService();
+    private final CompanyService companyService = new CompanyService();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -44,46 +33,17 @@ public class SubscriptionServlet extends HttpServlet {
         User loggedInUser = (User) session.getAttribute("user");
 
         if (loggedInUser == null) {
-            System.out.println("Error: No logged-in user found.");
             response.sendRedirect("vues/login.jsp");
             return;
         }
 
-        String action = request.getParameter("action");
-        int shuttleId = Integer.parseInt(request.getParameter("id"));
-        int companyId = Integer.parseInt(request.getParameter("company_id"));
-        String status = request.getParameter("status");
-        if ("canceled".equals(action)) {
-            Subscription existSubscription = subscriptionService.getSubscriptionByUserIdAndShuttleId(loggedInUser.getId(), shuttleId);
-            try {
-                if (existSubscription != null) {
-                    int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
-                    Subscription subscriptionUpdate = new Subscription(subscriptionId, "subscribed");
-                    subscriptionService.updateSubscription(subscriptionUpdate);
-                } else {
-                    System.out.println("Creating a new subscription...");
-                    Subscription subscription = new Subscription();
-                    subscription.setShuttleId(shuttleId);
-                    subscription.setUserId(loggedInUser.getId());
-                    subscription.setStatus("subscribed");
-                    subscription.setCreatedAt(new java.util.Date());
-                    subscriptionService.createSubscription(subscription); // Create new subscription
-                }
+        String action = Optional.ofNullable(request.getParameter("action")).orElse("list");
 
-                response.sendRedirect("/subscriptions?action=list"); // Redirect to the user list
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
-            }
-        } else if ("subscribed".equals(action)) {
-            int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
-            Shuttle shuttleUpdate = new Shuttle(shuttleId);
-            shuttleService.updateShuttle(shuttleUpdate);
-            Subscription subscriptionUpdate = new Subscription(subscriptionId, "canceled");
-            subscriptionService.updateSubscription(subscriptionUpdate);
-            System.out.println(", id: " + shuttleId + ", status: " + status + ", id: " + subscriptionId);
-            response.sendRedirect("/subscriptions?action=list");  // Redirect to the user list
-        } else {
-            response.sendRedirect("/subscriptions?action=list");  // Redirect to the user list
+        switch (action) {
+            case "canceled" -> handleSubscriptionCancellation(request, response, loggedInUser);
+            case "subscribed" -> handleSubscription(request, response);
+            case "search" -> handleSearch(request, response, loggedInUser);
+            default -> response.sendRedirect("/subscriptions?action=list");
         }
     }
 
@@ -96,46 +56,111 @@ public class SubscriptionServlet extends HttpServlet {
             response.sendRedirect("vues/login.jsp");
             return;
         }
+        loadShuttleData(request, response, loggedInUser);
+    }
 
+    private void handleSubscriptionCancellation(HttpServletRequest request, HttpServletResponse response, User loggedInUser) throws IOException {
         try {
+            int shuttleId = Integer.parseInt(request.getParameter("id"));
+            int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
+
+            Subscription existSubscription = subscriptionService.getSubscriptionByUserIdAndShuttleId(loggedInUser.getId(), shuttleId);
+
+            if (existSubscription != null) {
+                Subscription subscriptionUpdate = new Subscription(subscriptionId, "subscribed");
+                subscriptionService.updateSubscription(subscriptionUpdate);
+            } else {
+                Subscription newSubscription = new Subscription(shuttleId, loggedInUser.getId(), "subscribed", new Date());
+                subscriptionService.createSubscription(newSubscription);
+            }
+            response.sendRedirect("/subscriptions?action=list");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleSubscription(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            int shuttleId = Integer.parseInt(request.getParameter("id"));
+            int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
+
+            shuttleService.updateShuttle(new Shuttle(shuttleId));
+            subscriptionService.updateSubscription(new Subscription(subscriptionId, "canceled"));
+
+            response.sendRedirect("/subscriptions?action=list");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void handleSearch(HttpServletRequest request, HttpServletResponse response, User loggedInUser)
+            throws ServletException, IOException {
+        try {
+            String departureCity = request.getParameter("departureCity");
+            String arrivalCity = request.getParameter("arrivalCity");
+
+            // Validate input parameters
+            if (departureCity == null || departureCity.trim().isEmpty() ||
+                    arrivalCity == null || arrivalCity.trim().isEmpty()) {
+                request.setAttribute("error", "Both departure and arrival cities are required.");
+                request.getRequestDispatcher("/subscriptions/list.jsp").forward(request, response);
+                return; // Stop execution if input is invalid
+            }
+
             // Fetch shuttles and subscriptions
+            List<Shuttle> shuttles = shuttleService.search(departureCity.trim(), arrivalCity.trim());
+            List<Subscription> subscriptions = subscriptionService.getSubscriptionsByUserId(loggedInUser.getId());
+
+            // Enrich shuttle data with subscription info
+            enrichShuttleData(shuttles, subscriptions);
+
+            // Set attributes for the frontend
+            request.setAttribute("shuttles", shuttles);
+            request.setAttribute("result", "Search Results: " + departureCity + ", " + arrivalCity);
+
+            // Forward to results page
+            request.getRequestDispatcher("/subscriptions/list.jsp").forward(request, response);
+        } catch (Exception e) {
+            // Log the exception (Best Practice)
+            e.printStackTrace(); // Consider using a logger instead of printing stack trace
+            request.setAttribute("error", "Unable to fetch shuttles. Please try again later.");
+            request.getRequestDispatcher("/vues/dashboard.jsp").forward(request, response);
+        }
+    }
+
+    private void loadShuttleData(HttpServletRequest request, HttpServletResponse response, User loggedInUser) throws ServletException, IOException {
+        try {
             List<Shuttle> shuttles = shuttleService.getAllShuttles();
             List<Subscription> subscriptions = subscriptionService.getSubscriptionsByUserId(loggedInUser.getId());
 
-            // Store subscription details for each shuttle
-            Map<Integer, Map<String, Object>> subscriptionStatusMap = new HashMap<>();
-            for (Subscription subscription : subscriptions) {
-                Map<String, Object> details = new HashMap<>();
-                details.put("subscriptionId", subscription.getId());
-                details.put("status", subscription.getStatus());
-                subscriptionStatusMap.put(subscription.getShuttleId(), details);
-            }
-
-            // Iterate over shuttles and get owner details
-            for (Shuttle shuttle : shuttles) {
-                Map<String, Object> subscriptionDetails = subscriptionStatusMap.get(shuttle.getId());
-
-                // ✅ Ensure userService is initialized before calling it
-                Company owner = companyService.getCompanyById(shuttle.getUserId());
-
-                if (subscriptionDetails != null) {
-                    String status = (String) subscriptionDetails.get("status");
-                    int subscriptionId = (int) subscriptionDetails.get("subscriptionId");
-                    shuttle.setStatus(status);
-                    shuttle.setIsSubscribed(true);
-                    shuttle.setSubscriptionId(subscriptionId);
-                    shuttle.setShuttleOwner(String.valueOf(owner.getName()));  // 🔥 Add owner details to shuttle
-
-                } else {
-                    shuttle.setStatus("canceled");
-                    shuttle.setIsSubscribed(false);
-                }
-            }
+            enrichShuttleData(shuttles, subscriptions);
             request.setAttribute("shuttles", shuttles);
             request.getRequestDispatcher("/subscriptions/list.jsp").forward(request, response);
         } catch (Exception e) {
             request.setAttribute("error", "Unable to fetch shuttles. Please try again later. " + e.getMessage());
             request.getRequestDispatcher("/vues/dashboard.jsp").forward(request, response);
+        }
+    }
+
+    private void enrichShuttleData(List<Shuttle> shuttles, List<Subscription> subscriptions) {
+        Map<Integer, Subscription> subscriptionMap = new HashMap<>();
+        for (Subscription subscription : subscriptions) {
+            subscriptionMap.put(subscription.getShuttleId(), subscription);
+        }
+
+        for (Shuttle shuttle : shuttles) {
+            Subscription subscription = subscriptionMap.get(shuttle.getId());
+            Company owner = companyService.getCompanyById(shuttle.getUserId());
+
+            if (subscription != null) {
+                shuttle.setStatus(subscription.getStatus());
+                shuttle.setIsSubscribed(true);
+                shuttle.setSubscriptionId(subscription.getId());
+            } else {
+                shuttle.setStatus("canceled");
+                shuttle.setIsSubscribed(false);
+            }
+            shuttle.setShuttleOwner(owner != null ? owner.getName() : "Unknown");
         }
     }
 }

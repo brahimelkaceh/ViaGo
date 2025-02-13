@@ -30,9 +30,9 @@ public class RequestService {
         return null;
     }
 
-    public List<Request> getAllRequests() {
+    public List<Request> getAllRequests(int userId) {
         try {
-            List<Request> requests = requestsDAO.getAllRequests();
+            List<Request> requests = requestsDAO.getAllRequests(userId);
             if (requests != null) {
                 return requests;
             } else {
@@ -57,6 +57,21 @@ public class RequestService {
         }
         return null;
     }
+
+    public List<Request> getExistRequests(String departureCity, String arrivalCity) {
+        try {
+            List<Request> requests = requestsDAO.CheckExistRequest(departureCity, arrivalCity);
+            if (requests != null) {
+                return requests;
+            } else {
+                System.out.println("No requests found.");
+            }
+        } catch (Exception e) {
+            System.out.println("Error retrieving all requests: " + e.getMessage());
+        }
+        return null;
+    }
+
 
     public void createRequest(Request request) {
         try {

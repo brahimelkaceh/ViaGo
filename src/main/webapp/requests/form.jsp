@@ -104,6 +104,19 @@
 
 
         </form>
+        <%
+            String errorMessage = (String) session.getAttribute("error");
+            if (errorMessage != null) {
+        %>
+        <div class="alert alert-danger mt-2">The request with the chosen city already exists!! ${errorMessage}</div>
+        <%
+                session.removeAttribute("error"); // Remove the message after displaying it
+            }
+        %>
+
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger mt-2">${error}</div>
+        </c:if>
     </div>
 
 </div>

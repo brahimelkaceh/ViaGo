@@ -2,7 +2,7 @@ package web.app.viago.dao.requests;
 
 import web.app.viago.dao.DbConnection;
 import web.app.viago.model.Request;
-import web.app.viago.model.Shuttle;
+import web.app.viago.model.Subscription;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -54,21 +54,21 @@ public class RequestsDaoImpl implements RequestsDAO {
     }
 
     @Override
-    public List<Request> getAllRequests() {
+    public List<Request> getAllRequests(int userId) {
+        System.out.println("id" + userId);
         List<Request> requests = new ArrayList<Request>();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
 
         try {
-            // SQL query to fetch all shuttle services
-            String query = "SELECT * FROM requests";
 
-            // Get the database connection
-            Connection connection = DbConnection.getInstance().getConnection();
-
-            // Prepare and execute the SQL statement
+            connection = DbConnection.getInstance().getConnection();
+            String query = "SELECT * FROM requests WHERE user_id = ?";
             statement = connection.prepareStatement(query);
+            statement.setInt(1, userId);
+
             resultSet = statement.executeQuery();
+
 
             // Process the result set
             while (resultSet.next()) {
@@ -303,5 +303,31 @@ public class RequestsDaoImpl implements RequestsDAO {
 
         return requests;
     }
+
+    @Override
+    public List<Request> CheckExistRequest(String departureCity, String arrivalCity) {
+        List<Request> requests = new ArrayList<>();
+
+        String query = "SELECT id FROM requests WHERE departure_city = ? AND arrival_city = ? AND status = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, departureCity);
+            statement.setString(2, arrivalCity);
+            statement.setString(3, "ok");
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    Request request = new Request();
+                    request.setId(resultSet.getInt("id"));
+                    requests.add(request);
+
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching subscription by ID: " + e.getMessage());
+        }
+        return requests;
+    }
+
 
 }

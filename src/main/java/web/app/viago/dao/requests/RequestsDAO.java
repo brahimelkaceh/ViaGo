@@ -1,7 +1,6 @@
 package web.app.viago.dao.requests;
 
 import web.app.viago.model.Request;
-import web.app.viago.model.Shuttle;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ public interface RequestsDAO {
     void create(Request request);
 
     //    getAllRequests
-    List<Request> getAllRequests();
+    List<Request> getAllRequests(int userId);
 
     Request findById(int id);
 
@@ -25,4 +24,5 @@ public interface RequestsDAO {
     List<Request> getRequestsByStatus();
 
 
+    List<Request> CheckExistRequest(String departureCity, String arrivalCity);
 }

@@ -23,5 +23,5 @@ public interface ShuttleDAO {
     // Delete a shuttle by ID
     void delete(int id);
 
-    List<Shuttle> findByCity(String city);
+    List<Shuttle> search(String departureCity, String arrivalCity);
 }

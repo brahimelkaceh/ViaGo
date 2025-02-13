@@ -41,25 +41,40 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <a href="/index" class="btn btn-outline-info">⬅️ Back to Home</a>
         <h2 class="text-center">Browse Subscriptions</h2>
-        <a class="btn btn-danger mb-3" href="/requests?action=list">Managae Requests</a>
+        <a class="btn btn-warning mb-3" href="/requests?action=list">Managae Requests</a>
     </div>
 
     <!-- Search Bar -->
-    <form method="GET" action="subscriptions.jsp" class="mb-4">
-        <div class="row">
-            <div class="col-md-5">
-                <input type="text" name="departureCity" class="form-control" placeholder="Departure City"
-                       value="${param.departureCity}">
-            </div>
-            <div class="col-md-5">
-                <input type="text" name="arrivalCity" class="form-control" placeholder="Arrival City"
-                       value="${param.arrivalCity}">
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">Search</button>
-            </div>
+    <div class="row">
+        <div class="col-md-11">
+
+            <form method="POST" action="/subscriptions" class="mb-4">
+                <input type="hidden" name="action" value="search">
+                <div class="row">
+
+                    <div class="col-md-5">
+                        <input type="text" name="departureCity" class="form-control" placeholder="Departure City">
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" name="arrivalCity" class="form-control" placeholder="Arrival City">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+        <div class="col-md-1">
+            <form action="/subscriptions" method="get">
+                <input type="hidden" name="action" value="list">
+                <button type="submit" class="btn btn-danger w-100">Reset</button>
+            </form>
+        </div>
+
+    </div>
+    <c:if test="${not empty result}">
+        <div class="alert alert-info mt-2">${result}</div>
+    </c:if>
 
     <!-- Subscription List -->
     <div class="row">
@@ -105,6 +120,9 @@
             </div>
         </c:forEach>
     </div>
+    <c:if test="${not empty error}">
+        <div class="alert alert-danger mt-2">${error}</div>
+    </c:if>
 </div>
 </body>
 </html>

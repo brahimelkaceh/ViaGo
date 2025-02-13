@@ -69,7 +69,16 @@
         <h1>Welcome to Viago</h1>
         <p>Your one-stop solution for managing shuttle subscriptions and travel requests.</p>
         <a href="subscriptions" class="btn btn-primary btn-lg">Explore Subscriptions</a>
+
+        <%
+            if (user == null && company == null) {
+        %>
         <a class="btn btn-outline-light btn-lg" href="vues/register.jsp">Register</a>
+
+        <%
+            }
+        %>
+
     </div>
 </section>
 

@@ -78,20 +78,21 @@ public class RequestServlet extends HttpServlet {
                 default:
                     if (company != null) {
                         int companyId = company.getId();
-                        System.out.println("companyId" + companyId);
                         List<Request> requests = requestService.getRequestsByCompany(companyId);
                         request.setAttribute("requests", requests);
                         request.getRequestDispatcher("/requests/company-requests.jsp").forward(request, response);
 
                     } else {
-                        List<Request> requests = requestService.getAllRequests();
+                        int userId = loggedInUser.getId();
+                        List<Request> requests = requestService.getAllRequests(userId);
                         request.setAttribute("requests", requests);
                         request.getRequestDispatcher("/requests/list.jsp").forward(request, response);
                     }
                     break;
             }
         } else {
-            List<Request> requests = requestService.getAllRequests();
+            int userId = loggedInUser.getId();
+            List<Request> requests = requestService.getAllRequests(userId);
             request.setAttribute("requests", requests);
             request.getRequestDispatcher("/requests/list.jsp").forward(request, response);
         }
@@ -113,12 +114,19 @@ public class RequestServlet extends HttpServlet {
 
 
         if (action != null) {
+            String departureCity = request.getParameter("departure_city");
+            String arrivalCity = request.getParameter("arrival_city");
+            List<Request> existRequest = requestService.getExistRequests(departureCity, arrivalCity);
+            if (existRequest.size() >= 1) {
+                request.getSession().setAttribute("error", "The request already exists");
+                response.sendRedirect("/requests?action=create");
+                return;
+            }
             switch (action) {
                 case "statusChanged":
                     try {
                         int id = Integer.parseInt(request.getParameter("id"));
                         String status = request.getParameter("status");
-                        System.out.println("new Status " + status + " " + id);
 
                         Request updatedRequestStatus = new Request();
                         updatedRequestStatus.setId(id);
@@ -137,13 +145,10 @@ public class RequestServlet extends HttpServlet {
                     break;
                 case "create":
                     try {
-                        String departureCity = request.getParameter("departure_city");
-                        String arrivalCity = request.getParameter("arrival_city");
                         Date startDate = Date.valueOf(request.getParameter("departure_start_date"));
                         Date endDate = Date.valueOf(request.getParameter("arrival_end_date"));
                         int maxSubscribers = Integer.parseInt(request.getParameter("subscribers_count"));
                         int companyId = Integer.parseInt(request.getParameter("companyId"));
-
                         Request newRequest = new Request();
                         newRequest.setDeparture_city(departureCity);
                         newRequest.setArrival_city(arrivalCity);
@@ -178,8 +183,6 @@ public class RequestServlet extends HttpServlet {
                 case "update":
                     try {
                         int RequestId = Integer.parseInt(request.getParameter("id"));
-                        String departureCity = request.getParameter("departure_city");
-                        String arrivalCity = request.getParameter("arrival_city");
                         Date startDate = Date.valueOf(request.getParameter("departure_start_date"));
                         Date endDate = Date.valueOf(request.getParameter("arrival_end_date"));
                         int maxSubscribers = Integer.parseInt(request.getParameter("subscribers_count"));
@@ -203,7 +206,7 @@ public class RequestServlet extends HttpServlet {
                         response.sendRedirect("/requests?action=list");
                     } catch (Exception e) {
                         request.setAttribute("error", "Error creating user: " + e.getMessage());
-                        request.getRequestDispatcher("/requests/error.jsp").forward(request, response);
+                        request.getRequestDispatcher("/requests?action=create").forward(request, response);
 
                     }
                     break;

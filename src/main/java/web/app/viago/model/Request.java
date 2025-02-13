@@ -55,6 +55,10 @@ public class Request {
         this.status = status;
     }
 
+    public Request(int id) {
+        this.id = id;
+    }
+
 
     public int getId() {
         return id;

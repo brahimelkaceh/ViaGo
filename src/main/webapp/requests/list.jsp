@@ -41,7 +41,7 @@
         <a href="/requests?action=create" class="btn btn-success">Add New Request</a>
     </div>
     <div class="card shadow p-3">
-        <div class="table-responsive">
+        <div class="table-responsive" style="max-height: 60vh">
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark text-center">
                 <tr>
@@ -90,6 +90,9 @@
                 </c:forEach>
                 </tbody>
             </table>
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger">${error}</div>
+            </c:if>
         </div>
     </div>
 </div>
@@ -104,7 +107,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body text-center">
-                <p class="mb-2 text-danger">Are you sure you want to delete this shuttle?</p>
+                <p class="mb-2 text-danger">Are you sure you want to delete this request?</p>
                 <p class="text-danger fw-bold">This action cannot be undone.</p>
             </div>
             <div class="modal-footer justify-content-center">

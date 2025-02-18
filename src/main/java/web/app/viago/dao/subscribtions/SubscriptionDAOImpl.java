@@ -24,6 +24,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
 
     @Override
     public void createSubscribe(Subscription subscribe) {
+        System.out.println("Creating subscription: " + subscribe);
         PreparedStatement statement = null;
         PreparedStatement updateShuttleStatement = null;
 

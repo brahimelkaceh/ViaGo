@@ -60,7 +60,6 @@ public class ShuttleServlet extends HttpServlet {
                     int updateShuttleId = Integer.parseInt(request.getParameter("id"));
                     Shuttle updateShuttle = shuttleService.getShuttleById(updateShuttleId);  // Fetch the user to update
                     if (updateShuttle != null) {
-                        System.out.println("selected Shuttle : " + updateShuttle);
                         request.setAttribute("updateShuttle", updateShuttle);  // Set user as request attribute
                         request.getRequestDispatcher("/shuttles/form.jsp").forward(request, response);  // Forward to form.jsp for update
                     } else {
@@ -76,6 +75,7 @@ public class ShuttleServlet extends HttpServlet {
 
                 default:
                     List<Shuttle> defaultShuttles = shuttleService.getAllShuttlesByCompanyId(loggedInCompany.getId());
+                    System.out.println(defaultShuttles);
                     request.setAttribute("shuttles", defaultShuttles);
                     request.getRequestDispatcher("/shuttles/list.jsp").forward(request, response);
                     break;

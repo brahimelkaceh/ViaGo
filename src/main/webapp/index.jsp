@@ -124,6 +124,10 @@
                                 <li class="list-group-item"><strong>👥 Max
                                     Passengers:</strong> ${request.subscribers_count}
                                 </li>
+                                <li class="list-group-item"><strong>🕒
+                                    Departure:</strong> ${fn:substring(request.departure_time, 0, 5)}</li>
+                                <li class="list-group-item"><strong>⏳
+                                    Arrival:</strong> ${fn:substring(request.arrival_time, 0, 5)}</li>
                             </ul>
                         </div>
                     </div>

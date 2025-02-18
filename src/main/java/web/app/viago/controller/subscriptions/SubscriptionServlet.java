@@ -39,6 +39,7 @@ public class SubscriptionServlet extends HttpServlet {
 
         String action = Optional.ofNullable(request.getParameter("action")).orElse("list");
 
+
         switch (action) {
             case "canceled" -> handleSubscriptionCancellation(request, response, loggedInUser);
             case "subscribed" -> handleSubscription(request, response);
@@ -64,13 +65,15 @@ public class SubscriptionServlet extends HttpServlet {
             int shuttleId = Integer.parseInt(request.getParameter("id"));
             int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
 
+
             Subscription existSubscription = subscriptionService.getSubscriptionByUserIdAndShuttleId(loggedInUser.getId(), shuttleId);
 
+            System.out.println("existSubscription: " + existSubscription);
             if (existSubscription != null) {
                 Subscription subscriptionUpdate = new Subscription(subscriptionId, "subscribed");
                 subscriptionService.updateSubscription(subscriptionUpdate);
             } else {
-                Subscription newSubscription = new Subscription(shuttleId, loggedInUser.getId(), "subscribed", new Date());
+                Subscription newSubscription = new Subscription(loggedInUser.getId(), shuttleId, "subscribed", new Date());
                 subscriptionService.createSubscription(newSubscription);
             }
             response.sendRedirect("/subscriptions?action=list");
@@ -83,6 +86,7 @@ public class SubscriptionServlet extends HttpServlet {
         try {
             int shuttleId = Integer.parseInt(request.getParameter("id"));
             int subscriptionId = Integer.parseInt(request.getParameter("subscriptionId"));
+
 
             shuttleService.updateShuttle(new Shuttle(shuttleId));
             subscriptionService.updateSubscription(new Subscription(subscriptionId, "canceled"));

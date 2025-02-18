@@ -13,6 +13,7 @@ import web.app.viago.model.Shuttle;
 import web.app.viago.model.User;
 import web.app.viago.services.CompanyService;
 import web.app.viago.services.RequestService;
+import web.app.viago.services.ShuttleService;
 
 import java.io.IOException;
 import java.sql.Date;
@@ -23,12 +24,15 @@ public class RequestServlet extends HttpServlet {
 
     private CompanyService companyService;
     private RequestService requestService;
+    private ShuttleService shuttleService;
+
 
     @Override
     public void init() throws ServletException {
         super.init();
         this.companyService = new CompanyService();
         this.requestService = new RequestService();
+        this.shuttleService = new ShuttleService();
     }
 
 
@@ -148,12 +152,16 @@ public class RequestServlet extends HttpServlet {
                         Date startDate = Date.valueOf(request.getParameter("departure_start_date"));
                         Date endDate = Date.valueOf(request.getParameter("arrival_end_date"));
                         int maxSubscribers = Integer.parseInt(request.getParameter("subscribers_count"));
+                        String departureTime = request.getParameter("departure_time");
+                        String arrivalTime = request.getParameter("arrival_time");
                         int companyId = Integer.parseInt(request.getParameter("companyId"));
                         Request newRequest = new Request();
                         newRequest.setDeparture_city(departureCity);
                         newRequest.setArrival_city(arrivalCity);
                         newRequest.setDeparture_start_date(startDate);
                         newRequest.setArrival_end_date(endDate);
+                        newRequest.setDeparture_time(departureTime);
+                        newRequest.setArrival_time(arrivalTime);
                         newRequest.setSubscribers_count(maxSubscribers);
                         newRequest.setCompany_id(companyId);
                         assert userId != null;
@@ -185,6 +193,8 @@ public class RequestServlet extends HttpServlet {
                         int RequestId = Integer.parseInt(request.getParameter("id"));
                         Date startDate = Date.valueOf(request.getParameter("departure_start_date"));
                         Date endDate = Date.valueOf(request.getParameter("arrival_end_date"));
+                        String departureTime = request.getParameter("departure_time");
+                        String arrivalTime = request.getParameter("arrival_time");
                         int maxSubscribers = Integer.parseInt(request.getParameter("subscribers_count"));
                         int companyId = Integer.parseInt(request.getParameter("companyId"));
                         //            // Create a Shuttle object
@@ -194,6 +204,8 @@ public class RequestServlet extends HttpServlet {
                         updatedRequest.setArrival_city(arrivalCity);
                         updatedRequest.setDeparture_start_date(startDate);
                         updatedRequest.setArrival_end_date(endDate);
+                        updatedRequest.setDeparture_time(departureTime);
+                        updatedRequest.setArrival_time(arrivalTime);
                         updatedRequest.setSubscribers_count(maxSubscribers);
                         updatedRequest.setCompany_id(companyId);
                         updatedRequest.setCreatedAt(new java.util.Date());
@@ -210,6 +222,32 @@ public class RequestServlet extends HttpServlet {
 
                     }
                     break;
+                case "add":
+                    try {
+                        int requestId = Integer.parseInt(request.getParameter("requestId"));
+                        Request foundRequest = requestService.getRequestById(requestId);
+                        Shuttle shuttle = new Shuttle();
+                        shuttle.setDepartureCity(foundRequest.getDeparture_city());
+                        shuttle.setUserId(foundRequest.getCompany_id());
+                        shuttle.setShuttleOwner(company.getName());
+                        shuttle.setArrivalCity(foundRequest.getArrival_city());
+                        shuttle.setStartDate(foundRequest.getDeparture_start_date());
+                        shuttle.setEndDate(foundRequest.getArrival_end_date());
+                        shuttle.setDepartureTime(foundRequest.getDeparture_time());
+                        shuttle.setArrivalTime(foundRequest.getArrival_time());
+                        shuttle.setMaxSubscribers(foundRequest.getSubscribers_count());
+                        shuttle.setNumSubscribers(0);
+                        shuttle.setCreatedAt(new java.util.Date());
+
+                        shuttleService.createShuttle(shuttle, company.getId());
+                        response.sendRedirect("/requests?action=list");
+
+                    } catch (IOException e) {
+                        request.setAttribute("error", "Error creating user: " + e.getMessage());
+                    }
+                    break;
+
+
                 default:
                     response.sendRedirect("/requests?action=list");  // Default action is to redirect to the user list
                     break;

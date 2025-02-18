@@ -79,6 +79,16 @@
                        value="${updateRequest != null ? updateRequest.arrival_end_date : ''}" required>
             </div>
             <div class="mb-3">
+                <label for="departure_time" class="form-label">Departure Time</label>
+                <input type="time" class="form-control" id="departure_time" name="departure_time"
+                       value="${updateRequest != null ? updateRequest.departure_time : ''}" required>
+            </div>
+            <div class="mb-3">
+                <label for="arrival_time" class="form-label">Arrival time</label>
+                <input type="time" class="form-control" id="arrival_time" name="arrival_time"
+                       value="${updateRequest != null ? updateRequest.arrival_time : ''}" required>
+            </div>
+            <div class="mb-3">
                 <label for="subscribers_count" class="form-label">Number of Subscribers</label>
                 <input type="number" class="form-control" id="subscribers_count" name="subscribers_count"
                        value="${updateRequest != null ?  updateRequest.subscribers_count : ''}" required>

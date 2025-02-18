@@ -10,6 +10,8 @@ public class Request {
     private String arrival_city;
     private Date departure_start_date;
     private Date arrival_end_date;
+    private String departure_time;
+    private String arrival_time;
     private int subscribers_count;
     private String status;
     private Date createdAt;
@@ -32,13 +34,16 @@ public class Request {
     }
 
 
-    public Request(int id, int companyId, String departureCity, String arrivalCity, java.sql.Date departureStartDate, java.sql.Date arrivalEndDate, int subscribersCount) {
+    public Request(int id, int companyId, int user_id, String departureCity, String arrivalCity, java.sql.Date departureStartDate, java.sql.Date arrivalEndDate, String departure_time, String arrival_time, int subscribersCount) {
         this.id = id;
         this.company_id = companyId;
+        this.user_id = user_id;
         this.departure_city = departureCity;
         this.arrival_city = arrivalCity;
         this.departure_start_date = departureStartDate;
         this.arrival_end_date = arrivalEndDate;
+        this.departure_time = departure_time;
+        this.arrival_time = arrival_time;
         this.subscribers_count = subscribersCount;
 
 
@@ -114,6 +119,22 @@ public class Request {
 
     public void setArrival_end_date(Date arrival_end_date) {
         this.arrival_end_date = arrival_end_date;
+    }
+
+    public String getDeparture_time() {
+        return departure_time;
+    }
+
+    public void setDeparture_time(String departure_time) {
+        this.departure_time = departure_time;
+    }
+
+    public String getArrival_time() {
+        return arrival_time;
+    }
+
+    public void setArrival_time(String arrival_time) {
+        this.arrival_time = arrival_time;
     }
 
     public int getSubscribers_count() {

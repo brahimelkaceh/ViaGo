@@ -2,6 +2,8 @@
 <%@ page import="web.app.viago.model.Company" %>
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,13 +45,15 @@
         <div class="card shadow p-3">
             <table class="table table-striped table-hover">
                 <thead class="table-dark">
-                <tr>
+                <tr style="white-space: nowrap; font-size: 0.8rem ; text-align: center">
                     <th>ID</th>
                     <th>User</th>
                     <th>Departure City</th>
                     <th>Arrival City</th>
                     <th>Start Date</th>
                     <th>End Date</th>
+                    <th>Departure Time</th>
+                    <th>Arrival Time</th>
                     <th>Max Subscribers</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -57,13 +61,15 @@
                 </thead>
                 <tbody>
                 <c:forEach var="request" items="${requests}">
-                    <tr>
+                    <tr style="white-space: nowrap; font-size: 0.8rem ; text-align: center">
                         <td>${request.id}</td>
                         <td>${request.user_id}</td>
                         <td>${request.departure_city}</td>
                         <td>${request.arrival_city}</td>
                         <td>${request.departure_start_date}</td>
                         <td>${request.arrival_end_date}</td>
+                        <td> ${fn:substring(request.departure_time, 0, 5)} </td>
+                        <td> ${fn:substring(request.arrival_time, 0, 5)} </td>
                         <td>${request.subscribers_count}</td>
                         <td>
                             <form action="/requests" method="post" class="d-flex align-items-center">
@@ -91,9 +97,14 @@
                         </td>
                         <td>
                             <div class="btn-group">
-                                <a href="/requests?action=update&id=${request.id}" class="btn btn-warning btn-sm">
-                                    🖋️Edit
-                                </a>
+                                <form action="/requests" method="post">
+                                    <input type="hidden" value="add" name="action"/>
+                                    <input type="hidden" value="${request.id}" name="requestId"/>
+                                    <button type="submit" class="btn btn-success border-light text-light btn-sm"
+                                            data-bs-toggle="modal">
+                                        ✅ Add it
+                                    </button>
+                                </form>
                                 <button type="button" class="btn btn-light border-danger text-danger btn-sm ms-2"
                                         data-bs-toggle="modal"
                                         data-bs-target="#confirmDeleteModal" onclick="setDeleteId(${request.id})">

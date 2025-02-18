@@ -2,6 +2,8 @@
 
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -44,12 +46,15 @@
         <div class="table-responsive" style="max-height: 60vh">
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark text-center">
-                <tr>
+                <tr style="white-space: nowrap; font-size: 0.8rem ; text-align: center">
+
                     <th>ID</th>
                     <th>Departure City</th>
                     <th>Arrival City</th>
                     <th>Start Date</th>
                     <th>End Date</th>
+                    <th>Start time</th>
+                    <th>End time</th>
                     <th>Max Subscribers</th>
                     <th>Status</th>
                     <th>Actions</th>
@@ -58,12 +63,14 @@
                 <tbody>
                 <!-- Example shuttle row, dynamically populate this with backend data -->
                 <c:forEach var="request" items="${requests}">
-                    <tr>
+                    <tr style="white-space: nowrap; font-size: 0.8rem ; text-align: center">
                         <td>${request.id}</td>
                         <td>${request.departure_city}</td>
                         <td>${request.arrival_city}</td>
                         <td>${request.departure_start_date}</td>
                         <td>${request.arrival_end_date}</td>
+                        <td>${fn:substring(request.departure_time, 0, 5)}
+                        <td>${fn:substring(request.arrival_time, 0, 5)}</td>
                         <td>${request.subscribers_count}</td>
                         <td><span
                                 class="badge text-dark text-capitalize ${request.status == "cancel" ? "bg-danger" : request.status == "ok" ? "bg-success text-white" : "bg-warning "}">${request.status}</span>

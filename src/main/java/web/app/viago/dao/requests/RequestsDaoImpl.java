@@ -31,8 +31,8 @@ public class RequestsDaoImpl implements RequestsDAO {
         PreparedStatement statement = null;
         try {
             connection = DbConnection.getInstance().getConnection();
-            String query = "INSERT INTO requests (user_id, company_id, departure_city, arrival_city, requested_start_date, requested_end_date, subscribers_count, status, created_at)" +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String query = "INSERT INTO requests (user_id, company_id, departure_city, arrival_city, requested_start_date, requested_end_date, subscribers_count, status, created_at , start_time , end_time)" +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ? , ? , ?)";
 
             statement = connection.prepareStatement(query);
             statement.setInt(1, request.getUser_id()); // Set the user_id to the logged-in user's ID
@@ -44,6 +44,8 @@ public class RequestsDaoImpl implements RequestsDAO {
             statement.setInt(7, request.getSubscribers_count());
             statement.setString(8, request.getStatus());
             statement.setTimestamp(9, new java.sql.Timestamp(request.getCreatedAt().getTime()));
+            statement.setString(10, request.getDeparture_time());
+            statement.setString(11, request.getArrival_time());
             statement.executeUpdate();
 
         } catch (Exception e) {
@@ -55,7 +57,6 @@ public class RequestsDaoImpl implements RequestsDAO {
 
     @Override
     public List<Request> getAllRequests(int userId) {
-        System.out.println("id" + userId);
         List<Request> requests = new ArrayList<Request>();
         PreparedStatement statement = null;
         ResultSet resultSet = null;
@@ -79,6 +80,8 @@ public class RequestsDaoImpl implements RequestsDAO {
                 request.setDeparture_city(resultSet.getString("departure_city"));
                 request.setArrival_city(resultSet.getString("arrival_city"));
                 request.setDeparture_start_date(resultSet.getDate("requested_start_date"));
+                request.setDeparture_time(resultSet.getString("start_time"));
+                request.setArrival_time(resultSet.getString("end_time"));
                 request.setArrival_end_date(resultSet.getDate("requested_end_date"));
                 request.setSubscribers_count(resultSet.getInt("subscribers_count"));
                 request.setStatus(resultSet.getString("status"));
@@ -117,11 +120,14 @@ public class RequestsDaoImpl implements RequestsDAO {
             if (rs.next()) {
                 return new Request(
                         rs.getInt("id"),
+                        rs.getInt("user_id"),
                         rs.getInt("company_id"),
                         rs.getString("departure_city"),
                         rs.getString("arrival_city"),
                         rs.getDate("requested_start_date"),
                         rs.getDate("requested_end_date"),
+                        rs.getString("start_time"),
+                        rs.getString("end_time"),
                         rs.getInt("subscribers_count")
                 );
             } else {
@@ -148,17 +154,19 @@ public class RequestsDaoImpl implements RequestsDAO {
         PreparedStatement statement = null;
         try {
             connection = DbConnection.getInstance().getConnection();
-            String query = "UPDATE requests SET  departure_city = ?, arrival_city = ?, requested_start_date = ?, requested_end_date = ?, subscribers_count = ?, created_at = ?, company_id = ? WHERE id = ?;";
+            String query = "UPDATE requests SET  departure_city = ?, arrival_city = ?, requested_start_date = ?, requested_end_date = ?, start_time = ? , end_time = ? , subscribers_count = ?, created_at = ?, company_id = ? WHERE id = ?;";
             statement = connection.prepareStatement(query);
 
             statement.setString(1, request.getDeparture_city());
             statement.setString(2, request.getArrival_city());
             statement.setDate(3, new java.sql.Date(request.getDeparture_start_date().getTime()));
             statement.setDate(4, new java.sql.Date(request.getArrival_end_date().getTime()));
-            statement.setInt(5, request.getSubscribers_count());
-            statement.setTimestamp(6, new java.sql.Timestamp(request.getCreatedAt().getTime()));
-            statement.setInt(7, request.getCompany_id());
-            statement.setInt(8, request.getId()); // Use primary key for identifying the record
+            statement.setString(5, request.getDeparture_time());
+            statement.setString(6, request.getArrival_time());
+            statement.setInt(7, request.getSubscribers_count());
+            statement.setTimestamp(8, new java.sql.Timestamp(request.getCreatedAt().getTime()));
+            statement.setInt(9, request.getCompany_id());
+            statement.setInt(10, request.getId()); // Use primary key for identifying the record
 
 
             int rowsAffected = statement.executeUpdate();
@@ -261,6 +269,8 @@ public class RequestsDaoImpl implements RequestsDAO {
                     request.setArrival_city(resultSet.getString("arrival_city"));
                     request.setDeparture_start_date(resultSet.getDate("requested_start_date"));
                     request.setArrival_end_date(resultSet.getDate("requested_end_date"));
+                    request.setDeparture_time(resultSet.getString("start_time"));
+                    request.setArrival_time(resultSet.getString("end_time"));
                     request.setSubscribers_count(resultSet.getInt("subscribers_count"));
                     request.setStatus(resultSet.getString("status"));
                     request.setCreatedAt(resultSet.getTimestamp("created_at"));
@@ -293,6 +303,8 @@ public class RequestsDaoImpl implements RequestsDAO {
                     request.setArrival_city(resultSet.getString("arrival_city"));
                     request.setDeparture_start_date(resultSet.getDate("requested_start_date"));
                     request.setArrival_end_date(resultSet.getDate("requested_end_date"));
+                    request.setDeparture_time(resultSet.getString("start_time"));
+                    request.setArrival_time(resultSet.getString("end_time"));
                     request.setSubscribers_count(resultSet.getInt("subscribers_count"));
                     requests.add(request);
                 }

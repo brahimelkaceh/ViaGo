@@ -3,6 +3,8 @@
 
 <%@ page contentType="text/html; charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -45,7 +47,7 @@
         <div class="table-responsive">
             <table class="table table-striped table-hover align-middle">
                 <thead class="table-dark text-center">
-                <tr>
+                <tr style="white-space: nowrap; font-size: 0.8rem ; text-align: center">
                     <th>ID</th>
                     <th>Departure City</th>
                     <th>Arrival City</th>
@@ -55,6 +57,7 @@
                     <th>Arrival Time</th>
                     <th>Bus Description</th>
                     <th>Max Subscribers</th>
+                    <th>Number Subscribers</th>
                     <th>Actions</th>
 
                 </tr>
@@ -62,16 +65,17 @@
                 <tbody>
                 <!-- Example shuttle row, dynamically populate this with backend data -->
                 <c:forEach var="shuttle" items="${shuttles}">
-                    <tr>
+                    <tr style="white-space: nowrap; font-size: 0.8rem ; text-align: center">
                         <td>${shuttle.id}</td>
                         <td>${shuttle.departureCity}</td>
                         <td>${shuttle.arrivalCity}</td>
                         <td>${shuttle.startDate}</td>
                         <td>${shuttle.endDate}</td>
-                        <td>${shuttle.departureTime}</td>
-                        <td>${shuttle.arrivalTime}</td>
+                        <td>${fn:substring(shuttle.departureTime, 0, 5)}</td>
+                        <td>${fn:substring(shuttle.arrivalTime, 0, 5)}</td>
                         <td>${shuttle.busDescription}</td>
                         <td>${shuttle.maxSubscribers}</td>
+                        <td>${shuttle.numSubscribers}</td>
                         <td class="d-flex justify-content-between">
 
 

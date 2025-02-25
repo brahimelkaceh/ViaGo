@@ -9,7 +9,7 @@ import web.app.viago.model.Request;
 import web.app.viago.services.RequestService;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+
 import java.util.List;
 
 @WebServlet(name = "homeServlet", urlPatterns = "/index")

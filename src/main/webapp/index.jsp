@@ -83,14 +83,13 @@
 </section>
 
 <!-- How It Works Section -->
-<section class="py-5">
+<section class="py-5" style="height: 100%;">
     <div class="container">
         <h2 class="text-center mb-4">How It Works</h2>
         <div class="row text-center">
             <div class="col-md-6">
                 <i class="feature-icon bi bi-person"></i>
                 <h5 class="mt-3">For Users</h5>
-
                 <p>Search, subscribe, and manage your shuttle services with ease.</p>
             </div>
             <div class="col-md-6">
@@ -102,47 +101,11 @@
     </div>
 </section>
 
-<!-- Featured Subscriptions Section -->
-<section class="bg-light py-5">
-    <div class="container">
-        <h2 class="text-center mb-4">Peer-Recommended shuttles</h2>
-        <div class="row">
-            <!-- Dynamic content can go here -->
-            <c:forEach var="request" items="${requests}">
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm border-0 rounded-3">
-                        <div class="card-header bg-primary text-white text-center">
-                            <h5 class="card-title m-0">${request.departure_city} ➝ ${request.arrival_city}</h5>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item"><strong>🗓️ Start
-                                    Date:</strong> ${request.departure_start_date}
-                                </li>
-                                <li class="list-group-item"><strong>📅 End Date:</strong> ${request.arrival_end_date}
-                                </li>
-                                <li class="list-group-item"><strong>👥 Max
-                                    Passengers:</strong> ${request.subscribers_count}
-                                </li>
-                                <li class="list-group-item"><strong>🕒
-                                    Departure:</strong> ${fn:substring(request.departure_time, 0, 5)}</li>
-                                <li class="list-group-item"><strong>⏳
-                                    Arrival:</strong> ${fn:substring(request.arrival_time, 0, 5)}</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </c:forEach>
-
-            <!-- Add more cards dynamically -->
-        </div>
-    </div>
-</section>
 
 <!-- Footer -->
 <footer class="bg-dark text-white py-4">
     <div class="container text-center">
-        <p>Contact Us: info@shuttleease.com | 123-456-7890</p>
+        <p>Contact Us: info@viago.com | 123-456-7890</p>
         <p><a href="terms.jsp" class="text-white text-decoration-none">Terms of Service</a> | <a href="privacy.jsp"
                                                                                                  class="text-white text-decoration-none">Privacy
             Policy</a></p>
